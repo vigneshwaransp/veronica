@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY || "ozunqn05MP6abEPFjUB7KHDuzgQb1Rne";
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 
 export async function POST(req: NextRequest) {
   try {
