@@ -1,0 +1,11 @@
+# Vercel Ignore file
+node_modules
+.next
+.git
+venv
+.venv
+paper
+scratch
+web_insight_space
+*.pem
+*.log

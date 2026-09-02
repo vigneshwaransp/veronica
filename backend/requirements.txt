@@ -1,0 +1,10 @@
+fastapi==0.115.8
+uvicorn==0.34.0
+pydantic==2.10.6
+speechrecognition==3.14.1
+pyttsx3==2.98
+edge-tts==6.1.10
+python-multipart==0.0.20
+python-dotenv==1.0.1
+openai==1.63.0
+httpx==0.28.1

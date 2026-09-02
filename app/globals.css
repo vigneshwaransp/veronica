@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+:root {
+  /* Botanical / Organic Serif Design Tokens */
+  --bg-primary: #F9F8F4; /* Warm Alabaster / Rice Paper */
+  --fg-primary: #2D3A31; /* Deep Forest Green */
+  --color-sage: #8C9A84; /* Sage Green Accent */
+  --color-clay: #DCCFC2; /* Soft Clay */
+  --color-clay-light: #F2F0EB; /* Light Clay Card Background */
+  --color-stone: #E6E2DA; /* Subtle Stone Border */
+  --color-terracotta: #C27B66; /* Terracotta Interactive Pop */
+  --color-white: #FFFFFF;
+
+  /* Typography Stacks */
+  --font-serif: "Playfair Display", "Prata", Georgia, serif;
+  --font-body: "Source Sans 3", "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+  --font-logo: "Poppins", "Playfair Display", sans-serif;
+
+  /* Elevation */
+  --shadow-soft-sm: 0 4px 6px -1px rgba(45, 58, 49, 0.05);
+  --shadow-soft-md: 0 10px 20px -3px rgba(45, 58, 49, 0.06);
+  --shadow-soft-lg: 0 20px 40px -10px rgba(45, 58, 49, 0.08);
+}
+
+html,
+body {
+  background-color: var(--bg-primary);
+  color: var(--fg-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+}
+
+/* Serif & Cursive Headings */
+.font-serif-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.font-cursive {
+  font-family: "Alex Brush", "Dancing Script", "Great Vibes", "Playfair Display", cursive;
+}
+
+.font-calligraphy {
+  font-family: "Dancing Script", "Alex Brush", cursive;
+}
+
+.font-body-clean {
+  font-family: var(--font-body);
+}
+
+/* Botanical Buttons */
+.botanical-btn-primary {
+  background-color: #2D3A31;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  padding: 0.625rem 1.5rem;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(45, 58, 49, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.botanical-btn-primary:hover {
+  background-color: #C27B66;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(194, 123, 102, 0.25);
+}
+
+.botanical-btn-secondary {
+  background-color: transparent;
+  color: #2D3A31;
+  border: 1px solid #8C9A84;
+  border-radius: 9999px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.5rem;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.botanical-btn-secondary:hover {
+  background-color: #F2F0EB;
+  border-color: #2D3A31;
+  transform: translateY(-2px);
+}
+
+.botanical-btn-sage {
+  background-color: #8C9A84;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.5rem;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.botanical-btn-sage:hover {
+  background-color: #2D3A31;
+  transform: translateY(-2px);
+}
+
+/* Botanical Rounded-3XL Cards */
+.botanical-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E6E2DA;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: 0 10px 25px -3px rgba(45, 58, 49, 0.04);
+  transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.botanical-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 35px -5px rgba(45, 58, 49, 0.08);
+}
+
+.botanical-card-clay {
+  background-color: #F2F0EB;
+  border: 1px solid #E6E2DA;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: 0 8px 20px -3px rgba(45, 58, 49, 0.03);
+  transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Soundwave animation */
+@keyframes soundwavePulse {
+  0% {
+    height: 15%;
+    opacity: 0.4;
+  }
+  50% {
+    height: 100%;
+    opacity: 1;
+  }
+  100% {
+    height: 35%;
+    opacity: 0.7;
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
+}
