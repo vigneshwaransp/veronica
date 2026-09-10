@@ -519,6 +519,102 @@ export interface CoreLoopStepDetail {
   evidenceSnippet?: string;
 }
 
+export interface GeneratedDataRecord {
+  id: string;
+  timestamp: string;
+  features: Record<string, number | string>;
+  target?: string | number;
+  metadata?: {
+    clusterId?: number;
+    anomalyScore?: number;
+    entropy?: number;
+    confidence?: number;
+  };
+}
+
+export type SyntheticDataDomain =
+  | "ML_CLASSIFICATION"
+  | "ML_REGRESSION"
+  | "ML_CLUSTERING"
+  | "SYSTEM_TELEMETRY"
+  | "NLP_CONVERSATION"
+  | "ANOMALY_DETECTION"
+  | "VECTOR_EMBEDDINGS";
+
+export type SyntheticDataDistribution =
+  | "GAUSSIAN_MIXTURE"
+  | "UNIFORM"
+  | "MARKOVIAN_DRIFT"
+  | "BETA_DISTRIBUTION"
+  | "POWER_LAW";
+
+export interface SyntheticDataset {
+  id: string;
+  title: string;
+  domain: SyntheticDataDomain;
+  distribution: SyntheticDataDistribution;
+  sampleCount: number;
+  featureCount: number;
+  featureNames: string[];
+  targetName: string;
+  records: GeneratedDataRecord[];
+  createdAt: string;
+  metrics: {
+    meanEntropy: number;
+    classBalanceRatio?: string;
+    anomalyRatio?: number;
+    missingValues: number;
+  };
+}
+
+export interface ModelTrainingConfig {
+  modelId: string;
+  modelName: string;
+  datasetId: string;
+  targetColumn: string;
+  featureColumns: string[];
+  hyperparameters: {
+    epochs: number;
+    learningRate: number;
+    trainTestSplit: number; // e.g. 0.8
+    regularization: number;
+    batchSize: number;
+    kernelOrEstimators?: string | number;
+  };
+}
+
+export interface ModelTrainingRun {
+  id: string;
+  modelId: string;
+  modelName: string;
+  timestamp: string;
+  status: "IDLE" | "TRAINING" | "COMPLETED" | "FAILED";
+  progress: number; // 0-100
+  currentEpoch: number;
+  totalEpochs: number;
+  history: {
+    epoch: number;
+    trainLoss: number;
+    valLoss: number;
+    trainAcc: number;
+    valAcc: number;
+  }[];
+  metrics: {
+    accuracy: number;
+    f1Score: number;
+    precision: number;
+    recall: number;
+    rocAuc: number;
+    mse?: number;
+    p99LatencyMs: number;
+  };
+  featureImportances: { name: string; importance: number }[];
+  confusionMatrix?: {
+    labels: string[];
+    matrix: number[][];
+  };
+}
+
 export interface DigitalTwinState {
   currentContext: string;
   activeProject: string;
@@ -534,3 +630,4 @@ export interface DigitalTwinState {
   accuracyRate: number;
   lastAdaptationSummary: string;
 }
+
