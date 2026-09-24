@@ -362,8 +362,31 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
   // AI Council Confidence Evaluator & Maximum Efficiency Optimizer
   const evaluateCouncilIntervention = (query: string): AICouncilIntervention | undefined => {
-    if (!query || query.trim().length < 2) return undefined;
+    if (!query || query.trim().length < 3) return undefined;
     const qLower = query.toLowerCase().trim();
+
+    // Never trigger council intervention on greetings or casual pleasantries
+    const commonGreetings = [
+      "hi",
+      "hello",
+      "hey",
+      "good morning",
+      "good afternoon",
+      "good evening",
+      "howdy",
+      "yo",
+      "sup",
+      "thanks",
+      "thank you",
+      "who are you",
+      "what is veronica",
+      "test",
+      "ping"
+    ];
+
+    if (commonGreetings.some((g) => qLower === g || qLower.startsWith(`${g} `) || qLower.startsWith(`${g}!`) || qLower.startsWith(`${g}.`))) {
+      return undefined;
+    }
 
     const hedgeWords = [
       "maybe",
@@ -383,32 +406,20 @@ export const ChatView: React.FC<ChatViewProps> = ({
       "can we",
       "should i",
       "how do i",
-      "what is",
       "less confident",
-      "help",
-      "idk",
-      "which",
-      "how to",
-      "suggest",
-      "improve",
       "dilemma",
-      "what if",
-      "better",
-      "recommend",
-      "choice",
-      "less",
-      "confident"
+      "what if"
     ];
 
     const matchedHedges = hedgeWords.filter((h) => qLower.includes(h));
     const isQuestion = qLower.includes("?") || matchedHedges.length > 0;
-    const isShort = query.trim().split(/\s+/).length <= 6;
 
-    if (!isQuestion && !isShort && matchedHedges.length === 0 && twinMode === "HUMAN") {
+    // Only trigger if in AI_COUNCIL mode or explicit uncertainty on complex topics (query > 10 chars)
+    if (twinMode !== "AI_COUNCIL" && (matchedHedges.length === 0 || query.length < 10 || !isQuestion)) {
       return undefined;
     }
 
-    const confidence = Math.max(38, Math.min(68, 75 - matchedHedges.length * 10 - (isShort ? 8 : 0)));
+    const confidence = Math.max(45, Math.min(68, 75 - matchedHedges.length * 10));
 
     let correctedPrompt = "";
     let ambiguityReason = "";
@@ -429,7 +440,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
       ambiguityReason = "Visual asset analysis lacks explicit chromatic range and semantic boundary constraints.";
       correctedPrompt = "Perform computer vision decomposition on the image, detailing chromatic luminance values, duotone palette layers, ink line weights, and visual motion artifacts.";
     } else {
-      ambiguityReason = `Informal or unconstrained query (${matchedHedges.length > 0 ? `"${matchedHedges.join('", "')}"` : "unbounded prompt"}) reduces execution precision.`;
+      ambiguityReason = `Uncertainty detected in formulation ("${matchedHedges.slice(0, 2).join('", "') || "unbounded prompt"}") reduces execution precision.`;
       const cleanTopic = query.replace(/(?:maybe|not sure|i guess|i think|might|somehow|confused|don't know|probably|could be|can we just|idk|less confident|\?)/gi, "").trim();
       correctedPrompt = `Execute high-rigor engineering analysis for: "${cleanTopic || query}". Deliver a modular, type-safe, and benchmark-validated solution with zero architectural bloat.`;
     }

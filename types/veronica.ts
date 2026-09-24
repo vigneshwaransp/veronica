@@ -422,6 +422,49 @@ export interface BoardDirector {
   metricValue: string;
 }
 
+export type AgenticRoomAgentId =
+  | "WHATSAPP_AUTO"
+  | "EMAIL_OUTREACH"
+  | "LINKEDIN_GROWTH"
+  | "GITHUB_REVIEW"
+  | "CALENDAR_SCHEDULER"
+  | "WEB_SCRAPER"
+  | "SOCIAL_PUBLISHER"
+  | "PDF_OCR_SUMMARIZER"
+  | "FINANCIAL_TRACKER"
+  | "SUPPORT_RESOLVER"
+  | "SEO_OPTIMIZER"
+  | "DEVOPS_SENTINEL"
+  | "RESEARCH_SYNTHESIZER"
+  | "CRM_QUALIFIER"
+  | "STANDUP_TASKMASTER";
+
+export interface AgenticRoomAgent {
+  id: AgenticRoomAgentId;
+  name: string;
+  category: "MESSAGING" | "ENGINEERING" | "GROWTH" | "OPERATIONS" | "PRODUCTIVITY";
+  role: string;
+  tagline: string;
+  description: string;
+  status: "ACTIVE" | "IDLE" | "RUNNING" | "STANDBY";
+  triggerType: "WEBHOOK" | "CRON" | "EVENT" | "MANUAL";
+  triggerDetail: string;
+  samplePrompt: string;
+  initialSpeech: string;
+  executionSteps: string[];
+  metrics: {
+    tasksCompleted: number;
+    successRate: number; // 0-100
+    avgLatency: string;
+    timeSavedHours: number;
+  };
+  sampleOutput: {
+    title: string;
+    payloadType: "JSON" | "MARKDOWN" | "STATUS_CARD";
+    content: string;
+  };
+}
+
 export type MLModelId =
   | "SVM"
   | "KNN"

@@ -7,6 +7,7 @@ import { VeronicaCommandBar } from "@/components/veronica/os/VeronicaCommandBar"
 import { VeronicaBrain } from "@/components/veronica/webgl/VeronicaBrain";
 import { VeronicaSpaceHero } from "@/components/veronica/landing/VeronicaSpaceHero";
 import { VeronicaBecomeSelf } from "@/components/veronica/landing/VeronicaBecomeSelf";
+import { Scene } from "@/components/Scene";
 
 // Botanical & Machine Learning Views
 import { HomeView } from "@/components/veronica/views/HomeView";
@@ -26,6 +27,9 @@ import { AnalyticsView } from "@/components/veronica/views/AnalyticsView";
 import { TrustView } from "@/components/veronica/views/TrustView";
 import { SettingsView } from "@/components/veronica/views/SettingsView";
 import { SelfView } from "@/components/veronica/views/SelfView";
+import { MCPHubView } from "@/components/veronica/views/MCPHubView";
+import { LangGraphStudioView } from "@/components/veronica/views/LangGraphStudioView";
+import { PortfolioHomeView } from "@/components/veronica/views/PortfolioHomeView";
 import { X, Brain, Leaf, Compass, Menu, Search, Sparkles } from "lucide-react";
 
 export default function VeronicaApp() {
@@ -103,10 +107,13 @@ export default function VeronicaApp() {
 
   const getViewTitle = () => {
     switch (activeView) {
+      case "PORTFOLIO": return "Vigneshwaran S P (Portfolio & Systems)";
       case "HOME": return "Executive Dashboard";
+      case "MCP_HUB": return "Model Context Protocol (MCP) Hub";
+      case "LANGGRAPH_STUDIO": return "LangGraph StateGraph Studio";
       case "AI_GUDOWN": return "AI Gudown (Top 10 ML Models)";
       case "DATA_CENTRE": return "Data Centre (Chat Corpus)";
-      case "BOARD_ROOM": return "AI Board Room";
+      case "BOARD_ROOM": return "Agentic Room (15 Autonomous Agents)";
       case "CHAT": return "Conversational Digital Twin";
       case "COUNCIL": return "The Cognitive Council";
       case "SIMULATION": return "Decision Simulator";
@@ -203,6 +210,19 @@ export default function VeronicaApp() {
 
             {/* View Viewport */}
             <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6">
+              {activeView === "PORTFOLIO" && (
+                <PortfolioHomeView
+                  onLaunchOS={(view) => {
+                    if (view) setActiveView(view);
+                  }}
+                />
+              )}
+              {activeView === "MCP_HUB" && (
+                <MCPHubView onNavigateView={handleSelectView} />
+              )}
+              {activeView === "LANGGRAPH_STUDIO" && (
+                <LangGraphStudioView onNavigateView={handleSelectView} />
+              )}
               {activeView === "HOME" && (
                 <HomeView
                   user={user}
@@ -328,9 +348,12 @@ export default function VeronicaApp() {
           </div>
         </div>
       ) : (
-        /* Motionsites Signature Space Hero Landing Page */
-        <VeronicaSpaceHero
-          onEnterOS={() => setIsInOSMode(true)}
+        /* Dedicated Portfolio Home Page of Vigneshwaran S P */
+        <PortfolioHomeView
+          onLaunchOS={(view) => {
+            setIsInOSMode(true);
+            if (view) setActiveView(view);
+          }}
         />
       )}
     </main>

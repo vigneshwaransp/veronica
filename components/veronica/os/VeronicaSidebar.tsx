@@ -24,7 +24,10 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ArrowUpRight,
-  Settings
+  Settings,
+  User,
+  Server,
+  GitFork
 } from "lucide-react";
 
 interface VeronicaSidebarProps {
@@ -65,10 +68,13 @@ export const VeronicaSidebar: React.FC<VeronicaSidebarProps> = ({
     {
       group: "Core Intelligence",
       links: [
-        { id: "HOME", label: "Home", icon: Compass },
+        { id: "PORTFOLIO", label: "Vigneshwaran Portfolio", icon: User, badge: "Creator" },
+        { id: "HOME", label: "Executive Dashboard", icon: Compass },
+        { id: "MCP_HUB", label: "MCP Hub (Google / OpenAI)", icon: Server, badge: "MCP v1" },
+        { id: "LANGGRAPH_STUDIO", label: "LangGraph StateGraph", icon: GitFork, badge: "DAGs" },
         { id: "AI_GUDOWN", label: "AI Gudown (Top 10 ML)", icon: Cpu, badge: "10 ML" },
         { id: "DATA_CENTRE", label: "Data Centre (Chat Corpus)", icon: Database, badge: "Corpus" },
-        { id: "BOARD_ROOM", label: "AI Board Room", icon: Users, badge: "Executive" },
+        { id: "BOARD_ROOM", label: "Agentic Room (15 Agents)", icon: Users, badge: "15 Agents" },
       ],
     },
     {

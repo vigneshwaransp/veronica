@@ -57,20 +57,44 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
     },
   ];
 
-  const handleConveneCouncil = (qText?: string) => {
+  const handleConveneCouncil = async (qText?: string) => {
     const query = qText || questionInput;
     if (!query.trim()) return;
 
     setIsDeliberating(true);
 
-    // Simulate multi-stage council deliberation
-    setTimeout(() => {
-      const result = veronicaStore.evaluateCouncilQuestion(query);
-      setDebates(veronicaStore.getCouncilDebates());
-      setActiveDebate(result);
-      setIsDeliberating(false);
-      setQuestionInput("");
-    }, 1200);
+    try {
+      const res = await fetch("/api/council/debate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: query,
+          activePersona: veronicaStore.getActivePersona(),
+          memories: veronicaStore.getMemories().slice(0, 6),
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.debate) {
+          veronicaStore.addCouncilDebate(data.debate);
+          setDebates(veronicaStore.getCouncilDebates());
+          setActiveDebate(data.debate);
+          setIsDeliberating(false);
+          setQuestionInput("");
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Council debate API error, falling back to local evaluation:", e);
+    }
+
+    // Dynamic heuristic fallback
+    const result = veronicaStore.evaluateCouncilQuestion(query);
+    setDebates(veronicaStore.getCouncilDebates());
+    setActiveDebate(result);
+    setIsDeliberating(false);
+    setQuestionInput("");
   };
 
   const getVerdictBadge = (verdict: CouncilMemberVerdict["verdict"]) => {

@@ -1124,14 +1124,29 @@ class VeronicaStateStore {
     }
   }
 
+  public addCouncilDebate(debate: CouncilDebateResult): void {
+    this.councilDebates.unshift(debate);
+    this.logAuditEvent({
+      agentRole: "ORCHESTRATOR",
+      agentName: "Council Arbiter",
+      action: `Council Deliberation Completed: "${debate.question.slice(0, 45)}..."`,
+      impactLevel: "MEDIUM",
+      confirmationRequired: false,
+      status: "SUCCESS",
+      details: `5 Council Members debated across Speed-RAG, GAN, RNN, and RLHF. Final verdict: ${debate.finalVerdict} (${debate.consensusScore}% consensus).`,
+    });
+    this.notify();
+  }
+
   public evaluateCouncilQuestion(question: string, context?: string): CouncilDebateResult {
-    const activePersona = this.getActivePersona();
-    const speedRagLatency = +(0.65 + Math.random() * 0.55).toFixed(2);
-    const ganScore = +(0.85 + Math.random() * 0.12).toFixed(2);
+    const qClean = question.trim();
+    const speedRagLatency = +(0.55 + Math.random() * 0.45).toFixed(2);
+    const ganScore = +(0.82 + Math.random() * 0.14).toFixed(2);
     const rnnPredictability = +(88 + Math.random() * 9).toFixed(1);
     const rlhfReward = +(92 + Math.random() * 7).toFixed(1);
 
-    const qLower = question.toLowerCase();
+    const isTech = /rust|wasm|postgres|mongo|sql|db|type|ts|python|docker|k8s|api|microservice/i.test(qClean);
+    const isAuto = /autonom|agent|background|worker|cron|webhook|pr|git/i.test(qClean);
 
     // 1. Rationalist Verdict (Speed RAG)
     const ratVerdict: CouncilMemberVerdict = {
@@ -1140,7 +1155,9 @@ class VeronicaStateStore {
       archetype: "LOGIC_RAG",
       confidence: Math.round(92 + Math.random() * 7),
       verdict: "ENDORSE",
-      argument: `Speed-RAG retrieved matching memory traces in ${speedRagLatency}ms. The proposition adheres to verified factual priors and architectural clarity.`,
+      argument: isTech
+        ? `Speed-RAG empirical benchmarks indicate superior performance when enforcing strict memory bounds and compile-time type invariants for "${qClean.slice(0, 40)}".`
+        : `Empirical priors confirm that "${qClean.slice(0, 40)}" reduces entropy and maximizes deterministic task throughput.`,
       keyMetric: `${speedRagLatency}ms Speed-RAG Recall`,
       aiEngineDetail: `HNSW vector similarity: 0.94 cosine score against ${this.memories.length} indexed memory chunks.`
     };
@@ -1150,9 +1167,11 @@ class VeronicaStateStore {
       memberId: "council_adversary",
       memberName: "The Adversary",
       archetype: "GAN_ADVERSARIAL",
-      confidence: Math.round(85 + Math.random() * 10),
-      verdict: qLower.includes("risk") || qLower.includes("fail") || qLower.includes("break") ? "SCRUTINIZE" : "ADAPT",
-      argument: `Wasserstein GAN perturbation testing highlighted edge-case dependencies. We must verify boundary conditions under concurrency.`,
+      confidence: Math.round(76 + Math.random() * 12),
+      verdict: isAuto ? "SCRUTINIZE" : "ADAPT",
+      argument: isAuto
+        ? `Adversarial stress-testing warns that unchecked autonomous actions risk split-brain race conditions. We must mandate rollback checkpoints and telemetry tripwires.`
+        : `Wasserstein GAN perturbation testing revealed edge-case vulnerabilities during high-concurrency spikes. Strict timeout boundaries must be enforced.`,
       keyMetric: `D(x) = ${ganScore} Discriminator Score`,
       aiEngineDetail: `Generative generator synthesized 8 adversarial boundary variations.`
     };
@@ -1162,11 +1181,11 @@ class VeronicaStateStore {
       memberId: "council_temporal",
       memberName: "The Temporal Synthesizer",
       archetype: "RNN_TEMPORAL",
-      confidence: Math.round(89 + Math.random() * 8),
+      confidence: Math.round(86 + Math.random() * 9),
       verdict: "ENDORSE",
-      argument: `RNN recurrent hidden state modeling projects a ${rnnPredictability}% trajectory continuity with your 14-day decision history.`,
+      argument: `RNN recurrent sequence modeling indicates an 18-month upward trajectory with high ecosystem compatibility and negligible compounding technical debt for "${qClean.slice(0, 35)}".`,
       keyMetric: `${rnnPredictability}% Recurrent Fit`,
-      aiEngineDetail: `GRU temporal state h_t confirms positive momentum with persona '${activePersona.name}'.`
+      aiEngineDetail: `GRU temporal state h_t confirms positive momentum with persona '${this.getActivePersona().name}'.`
     };
 
     // 4. Value Guardian (RLHF)
@@ -1174,9 +1193,9 @@ class VeronicaStateStore {
       memberId: "council_guardian",
       memberName: "The Value Guardian",
       archetype: "RLHF_ALIGNMENT",
-      confidence: Math.round(95 + Math.random() * 4),
+      confidence: Math.round(94 + Math.random() * 5),
       verdict: "ALIGN",
-      argument: `RLHF Reward Model verified constitutional compliance. User sovereignty and data boundaries remain strictly respected.`,
+      argument: `Constitutional safety boundaries verified. User data sovereignty and privacy guarantees are strictly preserved with zero third-party leakage.`,
       keyMetric: `+${rlhfReward}% RLHF Alignment`,
       aiEngineDetail: `PPO KL divergence penalty bounded at delta < 0.01.`
     };
@@ -1196,19 +1215,19 @@ class VeronicaStateStore {
       archetype: "EXECUTIVE_SYNTHESIS",
       confidence: weightedScore,
       verdict: "SYNTHESIZE",
-      argument: `The Council reaches a ${weightedScore}% unified consensus. Synthesizing all recommendations into an immediate execution DAG.`,
+      argument: `Synthesizing Rationalist speed with Adversary safeguards: Proceed with phased rollout under Level 3 autonomy with automated telemetry verification.`,
       keyMetric: `${weightedScore}% Weighted Consensus`,
       aiEngineDetail: `Multi-agent arbitration resolved all tension points with autonomous confirmation.`
     };
 
     const newDebate: CouncilDebateResult = {
       id: `deb_${Date.now()}`,
-      question: question.trim(),
+      question: qClean,
       context: context || "Evaluated by the 5-Agent Cognitive Council",
       timestamp: new Date().toISOString(),
       consensusScore: weightedScore,
       finalVerdict: weightedScore >= 80 ? "APPROVED" : weightedScore >= 60 ? "CONDITIONAL" : "REJECTED",
-      synthesisSummary: `The Council evaluated '${question.slice(0, 60)}...' across Speed-RAG, GAN stress-testing, RNN sequence trajectory, and RLHF reward alignment. Final consensus: ${weightedScore}% approval with actionable directives.`,
+      synthesisSummary: `The Council evaluated '${qClean.slice(0, 60)}...' across Speed-RAG, GAN stress-testing, RNN sequence trajectory, and RLHF reward alignment. Final consensus: ${weightedScore}% approval with actionable directives.`,
       speedRagRetrievalTimeMs: speedRagLatency,
       ganDiscriminatorScore: ganScore,
       rnnTemporalPredictability: +rnnPredictability,
@@ -1216,19 +1235,7 @@ class VeronicaStateStore {
       verdicts: [ratVerdict, advVerdict, tempVerdict, guardVerdict, execVerdict],
     };
 
-    this.councilDebates.unshift(newDebate);
-
-    this.logAuditEvent({
-      agentRole: "ORCHESTRATOR",
-      agentName: "Council Arbiter",
-      action: `Council Evaluated Proposal: "${question.slice(0, 45)}..."`,
-      impactLevel: "MEDIUM",
-      confirmationRequired: false,
-      status: "SUCCESS",
-      details: `5 Council Members debated across Speed RAG, GAN, RNN, and RLHF. Consensus score: ${weightedScore}%.`,
-    });
-
-    this.notify();
+    this.addCouncilDebate(newDebate);
     return newDebate;
   }
 

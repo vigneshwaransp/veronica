@@ -51,7 +51,7 @@ export const VeronicaHeader: React.FC<VeronicaHeaderProps> = ({
 
   const NAV_LINKS = [
     { id: "HOME", label: "Home" },
-    { id: "BOARD_ROOM", label: "Board Room", highlight: true },
+    { id: "BOARD_ROOM", label: "Agentic Room", highlight: true },
     { id: "CHAT", label: "Talk to Twin" },
     { id: "SIMULATION", label: "What Would I Do?" },
     { id: "COUNCIL", label: "Council" },

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+import { generateAiCompletion } from "@/lib/ai-completion";
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,6 +21,8 @@ export async function POST(req: NextRequest) {
     if (sticker) {
       additionalGrounding += `\n\nAttached Sticker Action: [${sticker.label} - ${sticker.category}]`;
     }
+
+    const isGreeting = /^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening)|howdy|sup|yo|what\'s\s+up|who\s+are\s+you)\b/i.test((message || "").trim());
 
     const systemPrompt = `You are VERONICA — BEYOND THE ASSISTANT.
 You are a computational Digital Self / Virtual Human AI Operating System for the user (Principal AI Systems Architect).
@@ -45,7 +46,10 @@ Behavioral Principles:
 3. If an attached image or PDF is present, analyze its exact visual content, colors, objects, and layout with computer vision precision.
 4. Never falsely claim to be the human; clearly represent the digital computational twin model.
 5. Be concise, technically sharp, intelligent, and helpful. Keep responses structured and actionable.
-6. Whenever the user asks a question, technical dilemma, comparison (e.g. "Java or Python", "Postgres or Mongo"), or asks about visual/color elements of an image, ALWAYS append a JSON prediction block at the very end of your response:
+${
+  isGreeting
+    ? `6. GREETING DIRECTIVE: The user is greeting you. Respond warmly, crisply, and professionally as VERONICA. Acknowledge your active persona and readiness to assist with system architecture, autonomous agent workflows, or engineering tasks. DO NOT generate diagnostic failures or council intervention blocks.`
+    : `6. Whenever the user asks a technical question, comparison (e.g. "Java or Python", "Postgres or Mongo"), or asks about visual/color elements of an image, you may append a JSON prediction block at the very end of your response:
 \`\`\`json_prediction
 {
   "options": [
@@ -54,19 +58,17 @@ Behavioral Principles:
   ],
   "predictedChoice": "Specific Choice 1",
   "evidence": [
-    "Specific grounded evidence point 1 from query, image, or memories",
-    "Specific grounded evidence point 2",
-    "Specific grounded evidence point 3",
-    "Specific grounded evidence point 4"
+    "Specific grounded evidence point 1",
+    "Specific grounded evidence point 2"
   ],
   "confidence": 76
 }
 \`\`\`
-7. If the user's input is hesitant, uncertain, vague, informal, asking for help, or has less than 85% confidence (e.g. asking "what should I do?", "is X good?", "maybe", "can I", "not sure", "less confident", or open-ended questions), ALWAYS append a JSON council intervention block:
+7. ONLY if the user explicitly asks for prompt optimization, expresses extreme ambiguity on an unconstrained engineering task, or explicitly requests council deliberation, append a JSON council block:
 \`\`\`json_council
 {
   "detectedConfidence": 56,
-  "ambiguityReason": "Clear reason why the user input lacks architectural rigor or constraint precision.",
+  "ambiguityReason": "Clear reason why the input lacks architectural constraints.",
   "correctedPrompt": "The high-rigor, maximum efficiency reformulated prompt ready for execution.",
   "efficiencyGains": {
     "rigorIncrease": "+68% Rigor",
@@ -94,7 +96,8 @@ Behavioral Principles:
     }
   ]
 }
-\`\`\``;
+\`\`\``
+}`;
 
     const formattedUserContent = attachedImage?.dataUrl
       ? [
@@ -104,64 +107,58 @@ Behavioral Principles:
       : message;
 
     const messages = [
-      { role: "system", content: systemPrompt },
       ...(history || []).map((h: { sender: string; text: string }) => ({
-        role: h.sender === "user" ? "user" : "assistant",
+        role: (h.sender === "user" ? "user" : "assistant") as "user" | "assistant",
         content: h.text,
       })),
-      { role: "user", content: formattedUserContent },
+      { role: "user" as const, content: formattedUserContent },
     ];
 
-    const modelToUse = attachedImage?.dataUrl ? "pixtral-12b-2409" : "mistral-small-latest";
-
-    const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${MISTRAL_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: modelToUse,
-        messages,
-        temperature: 0.7,
-        max_tokens: 1024,
-      }),
+    const aiResult = await generateAiCompletion({
+      systemPrompt,
+      messages,
+      attachedImage: attachedImage?.dataUrl ? { dataUrl: attachedImage.dataUrl } : undefined,
+      temperature: 0.7,
+      maxTokens: 1200,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Mistral API error:", errorText);
-      return NextResponse.json(
-        {
-          reply: `VERONICA Core active. (Mistral API status ${response.status}. Internal heuristic engine active.) Based on your preferences and active Speed-RAG index, I recommend prioritizing type-safety and single-engine ACID consistency.`,
-        },
-        { status: 200 }
-      );
-    }
-
-    const data = await response.json();
-    let reply = data.choices?.[0]?.message?.content || "VERONICA: Synchronized.";
+    let reply = aiResult.text || "VERONICA Core active: Architectural twin synchronized.";
     let prediction = null;
     let councilIntervention = null;
 
-    const predictionMatch = reply.match(/```json_prediction\s*([\s\S]*?)\s*```/);
-    if (predictionMatch) {
+    // Helper to safely extract and strip JSON code fences
+    const extractBlock = (text: string, tag: string) => {
+      const regex = new RegExp(`\`\`\`${tag}\\s*([\\s\\S]*?)\`\`\``, "i");
+      const match = text.match(regex);
+      if (!match) return { data: null, cleaned: text };
+      let parsed = null;
       try {
-        prediction = JSON.parse(predictionMatch[1]);
-        reply = reply.replace(/```json_prediction\s*([\s\S]*?)\s*```/, "").trim();
-      } catch (e) {
-        console.error("Failed to parse prediction JSON:", e);
+        parsed = JSON.parse(match[1].trim());
+      } catch {
+        try {
+          parsed = JSON.parse(match[1].replace(/[\r\n]+/g, " ").trim());
+        } catch {
+          // ignore parse error
+        }
       }
-    }
+      return { data: parsed, cleaned: text.replace(regex, "").trim() };
+    };
 
-    const councilMatch = reply.match(/```json_council\s*([\s\S]*?)\s*```/);
-    if (councilMatch) {
-      try {
-        councilIntervention = JSON.parse(councilMatch[1]);
-        reply = reply.replace(/```json_council\s*([\s\S]*?)\s*```/, "").trim();
-      } catch (e) {
-        console.error("Failed to parse council JSON:", e);
+    const predResult = extractBlock(reply, "json_prediction");
+    if (predResult.data) {
+      prediction = predResult.data;
+    }
+    reply = predResult.cleaned;
+
+    if (!isGreeting) {
+      const councilResult = extractBlock(reply, "json_council");
+      if (councilResult.data) {
+        councilIntervention = councilResult.data;
       }
+      reply = councilResult.cleaned;
+    } else {
+      // Unconditionally strip any accidental council block on greetings
+      reply = reply.replace(/```json_council\s*[\s\S]*?```/gi, "").trim();
     }
 
     return NextResponse.json({ reply, prediction, councilIntervention });

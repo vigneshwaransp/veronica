@@ -22,7 +22,10 @@ import {
   Cpu,
   Settings,
   Globe,
-  ExternalLink
+  ExternalLink,
+  User,
+  Server,
+  GitFork
 } from "lucide-react";
 
 interface VeronicaCommandBarProps {
@@ -74,6 +77,39 @@ export const VeronicaCommandBar: React.FC<VeronicaCommandBarProps> = ({
 
   const COMMANDS: CommandOption[] = [
     {
+      id: "cmd_portfolio",
+      category: "PORTFOLIO",
+      label: "Open Vigneshwaran S P Portfolio",
+      sublabel: "Personal identity, AI innovations, technical matrix, and contact",
+      icon: User,
+      action: () => {
+        onNavigateView("PORTFOLIO");
+        onClose();
+      },
+    },
+    {
+      id: "cmd_mcp_hub",
+      category: "MODEL CONTEXT PROTOCOL",
+      label: "Open MCP Server Hub (Google, OpenAI, GitHub, Web)",
+      sublabel: "Execute tools across Google Gemini, ChatGPT, GitHub, and Speed-RAG",
+      icon: Server,
+      action: () => {
+        onNavigateView("MCP_HUB");
+        onClose();
+      },
+    },
+    {
+      id: "cmd_langgraph",
+      category: "LANGGRAPH STUDIO",
+      label: "Open LangGraph StateGraph Engine",
+      sublabel: "Multi-agent DAG orchestration with cyclical adversarial self-correction",
+      icon: GitFork,
+      action: () => {
+        onNavigateView("LANGGRAPH_STUDIO");
+        onClose();
+      },
+    },
+    {
       id: "cmd_home",
       category: "WORKSPACE",
       label: "Open Botanical Home Dashboard",
@@ -86,9 +122,9 @@ export const VeronicaCommandBar: React.FC<VeronicaCommandBarProps> = ({
     },
     {
       id: "cmd_board_room",
-      category: "BOARD ROOM",
-      label: "Enter AI Board Room",
-      sublabel: "Interactive executive dialogue with Speed-RAG, RLHF, GAN, RNN, and DAG directors",
+      category: "AGENTIC ROOM",
+      label: "Enter Agentic Room (15 Autonomous Agents)",
+      sublabel: "Orchestrate WhatsApp automation, email outreach, PR review, web scraper, and 15 agents",
       icon: Users,
       action: () => {
         onNavigateView("BOARD_ROOM");
