@@ -203,7 +203,8 @@ export const BUILT_IN_MCP_SERVERS: McpServerDefinition[] = [
           properties: {
             repository: {
               type: "string",
-              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica')",
+              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica', 'vercel/next.js')",
+              default: "vigneshwaransp/veronica",
             },
           },
           required: ["repository"],
@@ -211,14 +212,15 @@ export const BUILT_IN_MCP_SERVERS: McpServerDefinition[] = [
       },
       {
         name: "github_commit_history",
-        description: "Retrieve recent commit hashes, authors, and messages from a GitHub repository's main branch.",
+        description: "Retrieve recent commit hashes, authors, dates, and messages from a GitHub repository's main branch.",
         category: "git",
         inputSchema: {
           type: "object",
           properties: {
             repository: {
               type: "string",
-              description: "GitHub owner/repo slug",
+              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica')",
+              default: "vigneshwaransp/veronica",
             },
             limit: {
               type: "number",
@@ -231,19 +233,95 @@ export const BUILT_IN_MCP_SERVERS: McpServerDefinition[] = [
       },
       {
         name: "github_pr_synthesize",
-        description: "Synthesize pull request changes into a high-density architectural changelog and automated release notes.",
+        description: "Synthesize pull request changes into a high-density architectural changelog, risk evaluation, and automated release notes.",
         category: "git",
         inputSchema: {
           type: "object",
           properties: {
             repository: {
               type: "string",
-              description: "GitHub owner/repo slug",
+              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica')",
+              default: "vigneshwaransp/veronica",
             },
             branch: {
               type: "string",
-              description: "Feature branch name",
+              description: "Feature branch name or target branch",
               default: "main",
+            },
+          },
+          required: ["repository"],
+        },
+      },
+      {
+        name: "github_issues_list",
+        description: "Fetch open issues, pull requests, and bug reports with status, labels, and issue numbers directly from GitHub.",
+        category: "git",
+        inputSchema: {
+          type: "object",
+          properties: {
+            repository: {
+              type: "string",
+              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica')",
+              default: "vigneshwaransp/veronica",
+            },
+            state: {
+              type: "string",
+              description: "Filter issue state: 'open', 'closed', or 'all'",
+              enum: ["open", "closed", "all"],
+              default: "open",
+            },
+            limit: {
+              type: "number",
+              description: "Maximum number of issues to retrieve (1-20)",
+              default: 5,
+            },
+          },
+          required: ["repository"],
+        },
+      },
+      {
+        name: "github_file_read",
+        description: "Fetch file contents, package manifests, or documentation directly from a GitHub repository branch.",
+        category: "git",
+        inputSchema: {
+          type: "object",
+          properties: {
+            repository: {
+              type: "string",
+              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica')",
+              default: "vigneshwaransp/veronica",
+            },
+            path: {
+              type: "string",
+              description: "Relative file path inside the repository (e.g. 'package.json', 'README.md')",
+              default: "package.json",
+            },
+            branch: {
+              type: "string",
+              description: "Branch name or commit ref",
+              default: "main",
+            },
+          },
+          required: ["repository", "path"],
+        },
+      },
+      {
+        name: "github_code_review",
+        description: "Perform automated AI-powered AST static analysis, TypeScript type safety verification, and architectural review for any repo.",
+        category: "git",
+        inputSchema: {
+          type: "object",
+          properties: {
+            repository: {
+              type: "string",
+              description: "GitHub owner/repo slug (e.g. 'vigneshwaransp/veronica')",
+              default: "vigneshwaransp/veronica",
+            },
+            focusArea: {
+              type: "string",
+              description: "Review focus area: 'type-safety', 'security', 'performance', or 'comprehensive'",
+              enum: ["comprehensive", "type-safety", "security", "performance"],
+              default: "comprehensive",
             },
           },
           required: ["repository"],

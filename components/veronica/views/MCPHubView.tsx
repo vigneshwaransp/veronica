@@ -465,15 +465,47 @@ export function MCPHubView({ onNavigateView }: MCPHubViewProps) {
                             className="w-full p-2.5 bg-[#F9F8F4] border border-[#E6E2DA] rounded-xl text-xs text-[#2D3A31] focus:ring-1 focus:ring-[#8C9A84] focus:outline-none font-mono"
                           />
                         ) : (
-                          <textarea
-                            rows={key === "code" || key === "prompt" ? 4 : 2}
-                            value={toolArguments[key] || ""}
-                            onChange={(e) =>
-                              setToolArguments({ ...toolArguments, [key]: e.target.value })
-                            }
-                            placeholder={`Enter ${key}...`}
-                            className="w-full p-2.5 bg-[#F9F8F4] border border-[#E6E2DA] rounded-xl text-xs text-[#2D3A31] focus:ring-1 focus:ring-[#8C9A84] focus:outline-none font-mono resize-y"
-                          />
+                          <div className="space-y-1.5">
+                            <textarea
+                              rows={key === "code" || key === "prompt" ? 4 : 2}
+                              value={toolArguments[key] !== undefined ? toolArguments[key] : prop.default || ""}
+                              onChange={(e) =>
+                                setToolArguments({ ...toolArguments, [key]: e.target.value })
+                              }
+                              placeholder={`Enter ${key}...`}
+                              className="w-full p-2.5 bg-[#F9F8F4] border border-[#E6E2DA] rounded-xl text-xs text-[#2D3A31] focus:ring-1 focus:ring-[#8C9A84] focus:outline-none font-mono resize-y"
+                            />
+                            {key === "repository" && (
+                              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                <span className="text-[10px] text-[#2D3A31]/50 font-mono self-center">Presets:</span>
+                                {["vigneshwaransp/veronica", "vercel/next.js", "facebook/react"].map((r) => (
+                                  <button
+                                    key={r}
+                                    type="button"
+                                    onClick={() => setToolArguments({ ...toolArguments, repository: r })}
+                                    className="text-[10px] px-2 py-0.5 bg-[#F2F0EB] hover:bg-[#E6E2DA] rounded-md font-mono text-[#2D3A31] border border-[#E6E2DA] cursor-pointer"
+                                  >
+                                    {r}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {key === "path" && (
+                              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                <span className="text-[10px] text-[#2D3A31]/50 font-mono self-center">Presets:</span>
+                                {["package.json", "README.md", "next.config.ts", "tsconfig.json"].map((p) => (
+                                  <button
+                                    key={p}
+                                    type="button"
+                                    onClick={() => setToolArguments({ ...toolArguments, path: p })}
+                                    className="text-[10px] px-2 py-0.5 bg-[#F2F0EB] hover:bg-[#E6E2DA] rounded-md font-mono text-[#2D3A31] border border-[#E6E2DA] cursor-pointer"
+                                  >
+                                    {p}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     );
