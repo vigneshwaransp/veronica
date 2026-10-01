@@ -86,4 +86,5 @@ export interface GraphExecutionResult {
   stepsCount: number;
   totalLatencyMs: number;
   executionTrace: LangGraphStepTrace[];
+  customTopology?: GraphTopologyDefinition;
 }

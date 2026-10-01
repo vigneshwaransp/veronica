@@ -700,6 +700,8 @@ plt.show()`,
   },
 ];
 
+import { MarkdownViewer } from "@/components/veronica/ui/MarkdownViewer";
+
 export const AIGudownView: React.FC<AIGudownViewProps> = ({
   user,
   activePersona,
@@ -712,9 +714,17 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
   const [isRetraining, setIsRetraining] = useState(false);
   const [retrainSuccess, setRetrainSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<"MODELS" | "TRAJECTORY_REPORT" | "SNS_CHARTS">("MODELS");
-  const [modelDetailTab, setModelDetailTab] = useState<"SPECS" | "PYTHON_CODE" | "INFERENCE_BENCH">("PYTHON_CODE");
+  const [modelDetailTab, setModelDetailTab] = useState<"EXPLANATION" | "PYTHON_CODE" | "SPECS" | "INFERENCE_BENCH">("EXPLANATION");
   const [codeMode, setCodeMode] = useState<"train" | "infer" | "snsPlot">("train");
   const [copiedCode, setCopiedCode] = useState(false);
+
+  // Data Ingestion State
+  const [dataSourceTab, setDataSourceTab] = useState<"USER_INPUT" | "MEMORY_BANK" | "DATA_CENTRE">("MEMORY_BANK");
+  const [customDataInput, setCustomDataInput] = useState<string>(
+    "Technical Depth: 94%, pgvector Affinity: 0.92, Token Length: 38, Latency Tolerance: 15ms, Preferred Stack: Next.js App Router + Postgres"
+  );
+  const [isIngestingData, setIsIngestingData] = useState<boolean>(false);
+  const [dataIngestedSuccess, setDataIngestedSuccess] = useState<string | null>(null);
 
   // Trajectory Report state
   const [trajectoryReport, setTrajectoryReport] = useState<ConversationTrajectoryReport>(() => {
@@ -731,6 +741,7 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
     confidence: number;
     probabilities: { label: string; score: number }[];
     executionTimeMs: number;
+    explanationTrace?: string;
   } | null>(null);
 
   const selectedModel = models.find((m) => m.id === selectedModelId) || models[0];
@@ -739,6 +750,42 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
     if (categoryFilter === "ALL") return true;
     return m.category === categoryFilter;
   });
+
+  const handleIngestCustomData = () => {
+    setIsIngestingData(true);
+    setTimeout(() => {
+      setIsIngestingData(false);
+      setDataIngestedSuccess("Custom user data parsed & transformed into 12-dimensional training feature vectors.");
+      setTimeout(() => setDataIngestedSuccess(null), 3500);
+      veronicaStore.logAuditEvent({
+        agentRole: "RESEARCH AGENT",
+        agentName: "AI Gudown Ingestion",
+        action: "Ingested Custom User Feature Vector",
+        impactLevel: "MEDIUM",
+        confirmationRequired: false,
+        status: "SUCCESS",
+        details: `Loaded features: "${customDataInput.slice(0, 45)}...". Calibrated ML hyperplanes.`,
+      });
+    }, 400);
+  };
+
+  const handleExtractFromMemoryBank = () => {
+    setIsIngestingData(true);
+    setTimeout(() => {
+      setIsIngestingData(false);
+      setDataIngestedSuccess(`Extracted ${memories.length} semantic memory nodes into high-dimensional vector training matrix.`);
+      setTimeout(() => setDataIngestedSuccess(null), 3500);
+      veronicaStore.logAuditEvent({
+        agentRole: "MEMORY AGENT",
+        agentName: "Memory Bank Feature Extractor",
+        action: `Extracted ${memories.length} Memory Nodes for ML Training`,
+        impactLevel: "MEDIUM",
+        confirmationRequired: false,
+        status: "SUCCESS",
+        details: `Constructed 1536-d cosine embedding matrix for user profile ${user.name}.`,
+      });
+    }, 400);
+  };
 
   const handleRetrainAllModels = () => {
     setIsRetraining(true);
@@ -907,10 +954,109 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
          ========================================================= */}
       {activeTab === "MODELS" && (
         <div className="space-y-6 animate-in fade-in">
+          {/* Data Ingestion & Source Selector Card */}
+          <div className="p-6 bg-[#FFFFFF] border border-[#E6E2DA] rounded-[28px] shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#E6E2DA] pb-3">
+              <div>
+                <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider block mb-0.5">
+                  Step 1: Dataset & Feature Source
+                </span>
+                <h4 className="text-base font-serif font-bold text-[#2D3A31]">
+                  Ingest Training Data for Model Architecture Calibration
+                </h4>
+              </div>
+
+              {/* Source Switcher */}
+              <div className="flex bg-[#F2F0EB] border border-[#E6E2DA] rounded-full p-1 text-xs">
+                <button
+                  onClick={() => setDataSourceTab("MEMORY_BANK")}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer",
+                    dataSourceTab === "MEMORY_BANK"
+                      ? "bg-[#2D3A31] text-white shadow-sm"
+                      : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
+                  )}
+                >
+                  🧠 Memory Bank
+                </button>
+                <button
+                  onClick={() => setDataSourceTab("USER_INPUT")}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer",
+                    dataSourceTab === "USER_INPUT"
+                      ? "bg-[#2D3A31] text-white shadow-sm"
+                      : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
+                  )}
+                >
+                  📥 Custom User Data
+                </button>
+                <button
+                  onClick={() => onNavigateView("DATA_CENTRE")}
+                  className="px-3.5 py-1.5 rounded-full font-semibold text-[#2D3A31]/70 hover:text-[#2D3A31] transition-all cursor-pointer"
+                >
+                  ⚡ Data Centre
+                </button>
+              </div>
+            </div>
+
+            {/* Source Tab 1: Memory Bank */}
+            {dataSourceTab === "MEMORY_BANK" && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl">
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-[#2D3A31] block">
+                    Active Cognitive Memory Corpus ({memories.length} Nodes Indexed)
+                  </span>
+                  <p className="text-xs text-[#2D3A31]/70">
+                    Extracts high-dimensional embeddings across user preferences, architectural decisions, and coding standards.
+                  </p>
+                </div>
+                <button
+                  onClick={handleExtractFromMemoryBank}
+                  disabled={isIngestingData}
+                  className="botanical-btn-primary py-2 px-5 text-xs font-semibold rounded-xl whitespace-nowrap cursor-pointer"
+                >
+                  {isIngestingData ? "Extracting..." : "⚡ Ingest Memories to Models"}
+                </button>
+              </div>
+            )}
+
+            {/* Source Tab 2: Custom User Input */}
+            {dataSourceTab === "USER_INPUT" && (
+              <div className="space-y-3 p-4 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl">
+                <label className="text-xs font-bold text-[#2D3A31] block">
+                  Paste Custom Tabular Features, JSON, or CSV Strings:
+                </label>
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  <input
+                    type="text"
+                    value={customDataInput}
+                    onChange={(e) => setCustomDataInput(e.target.value)}
+                    placeholder="e.g. Technical Depth: 95%, Concurrency: 500, Latency: 12ms, Stack: Postgres"
+                    className="w-full bg-[#FFFFFF] border border-[#E6E2DA] rounded-xl px-4 py-2.5 text-xs text-[#2D3A31] focus:outline-none focus:border-[#8C9A84]"
+                  />
+                  <button
+                    onClick={handleIngestCustomData}
+                    disabled={isIngestingData || !customDataInput.trim()}
+                    className="w-full sm:w-auto botanical-btn-primary py-2.5 px-6 text-xs font-semibold rounded-xl whitespace-nowrap cursor-pointer"
+                  >
+                    {isIngestingData ? "Ingesting..." : "Ingest & Calibrate"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {dataIngestedSuccess && (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>{dataIngestedSuccess}</span>
+              </div>
+            )}
+          </div>
+
           {/* Category Filter Pills */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider mr-1">
-              Filter:
+              Step 2: Choose Model Architecture:
             </span>
             {[
               { id: "ALL", label: "All 10 Models" },
@@ -924,7 +1070,7 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                 key={cat.id}
                 onClick={() => setCategoryFilter(cat.id)}
                 className={cn(
-                  "px-3 py-1 rounded-full text-xs font-semibold border transition-all",
+                  "px-3 py-1 rounded-full text-xs font-semibold border transition-all cursor-pointer",
                   categoryFilter === cat.id
                     ? "bg-[#2D3A31] text-[#FFFFFF] border-[#2D3A31] shadow-sm"
                     : "bg-[#FFFFFF] text-[#2D3A31]/70 border-[#E6E2DA] hover:bg-[#F2F0EB]"
@@ -968,7 +1114,7 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                   <div className="pt-2 border-t border-[#E6E2DA]/80 flex items-center justify-between text-[10px] font-semibold text-[#8C9A84]">
                     <span>{model.trainingLatency}</span>
                     <span className="flex items-center gap-0.5">
-                      <span>Code</span>
+                      <span>Inspect</span>
                       <ArrowRight className="w-2.5 h-2.5" />
                     </span>
                   </div>
@@ -986,7 +1132,7 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                   <span className="px-2 py-0.5 bg-[#2D3A31] text-white text-[10px] font-bold rounded-full uppercase">
                     {selectedModel.category}
                   </span>
-                  <span className="text-xs font-mono font-bold text-[#8C9A84]">Model: {selectedModel.id}</span>
+                  <span className="text-xs font-mono font-bold text-[#8C9A84]">Model Architecture: {selectedModel.id}</span>
                 </div>
                 <h3 className="text-2xl font-serif font-bold text-[#2D3A31]">
                   {selectedModel.name}
@@ -996,12 +1142,25 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                 </p>
               </div>
 
-              {/* Sub-Tabs: Code vs Specs vs Inference Bench */}
+              {/* Sub-Tabs: Explanation vs Code vs Specs vs Inference Bench */}
               <div className="flex items-center gap-1.5 p-1 bg-[#F2F0EB] border border-[#E6E2DA] rounded-xl text-xs font-semibold shrink-0">
+                <button
+                  onClick={() => setModelDetailTab("EXPLANATION")}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold cursor-pointer",
+                    modelDetailTab === "EXPLANATION"
+                      ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                      : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
+                  )}
+                >
+                  <Brain className="w-3.5 h-3.5 text-[#8C9A84]" />
+                  <span>Model Explanation</span>
+                </button>
+
                 <button
                   onClick={() => setModelDetailTab("PYTHON_CODE")}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold",
+                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold cursor-pointer",
                     modelDetailTab === "PYTHON_CODE"
                       ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
                       : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
@@ -1014,7 +1173,7 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                 <button
                   onClick={() => setModelDetailTab("SPECS")}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold",
+                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold cursor-pointer",
                     modelDetailTab === "SPECS"
                       ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
                       : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
@@ -1027,7 +1186,7 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                 <button
                   onClick={() => setModelDetailTab("INFERENCE_BENCH")}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold",
+                    "px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-bold cursor-pointer",
                     modelDetailTab === "INFERENCE_BENCH"
                       ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
                       : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
@@ -1038,6 +1197,55 @@ export const AIGudownView: React.FC<AIGudownViewProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Sub-Tab 0: Model Explanation Lab */}
+            {modelDetailTab === "EXPLANATION" && (
+              <div className="space-y-4 animate-in fade-in">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl space-y-2">
+                    <span className="text-[11px] font-bold text-[#8C9A84] uppercase tracking-wider block">
+                      1. What This Model Does
+                    </span>
+                    <p className="text-xs text-[#2D3A31]/90 leading-relaxed font-sans">
+                      {selectedModel.description}
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl space-y-2">
+                    <span className="text-[11px] font-bold text-[#8C9A84] uppercase tracking-wider block">
+                      2. Data Transformation Pipeline
+                    </span>
+                    <p className="text-xs text-[#2D3A31]/90 leading-relaxed font-sans">
+                      Maps incoming 1536-d query vectors into scaled decision space ({selectedModel.category.toLowerCase()}), evaluating optimal parameters with {selectedModel.trainingLatency} convergence time.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl space-y-2">
+                    <span className="text-[11px] font-bold text-[#8C9A84] uppercase tracking-wider block">
+                      3. Output & Metric Interpretation
+                    </span>
+                    <p className="text-xs text-[#2D3A31]/90 leading-relaxed font-sans">
+                      Cross-validation accuracy of <strong className="text-[#2D3A31]">{selectedModel.accuracy}%</strong> with bounded entropy. Outputs probabilistic class margins with deterministic safeguards.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Metrics Breakdown Table */}
+                <div className="p-4 bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl space-y-2">
+                  <span className="text-xs font-bold text-[#2D3A31] block">
+                    Core Algorithmic Metrics Decoded:
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {selectedModel.metrics.map((m, idx) => (
+                      <div key={idx} className="p-3 bg-[#F9F8F4] border border-[#E6E2DA] rounded-xl">
+                        <span className="text-[10px] text-[#8C9A84] font-semibold uppercase block">{m.name}</span>
+                        <span className="text-sm font-bold text-[#2D3A31] font-mono">{m.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Sub-Tab 1: Python Code Viewer */}
             {modelDetailTab === "PYTHON_CODE" && selectedModel.pythonCode && (

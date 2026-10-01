@@ -78,6 +78,35 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ memories }) => {
     { key: "short_term", label: "Short-Term" },
   ];
 
+  const [isAutoLinking, setIsAutoLinking] = useState(false);
+  const [autoLinkMessage, setAutoLinkMessage] = useState<string | null>(null);
+
+  const handleAutoLinkSemanticNeighbors = () => {
+    setIsAutoLinking(true);
+    setTimeout(() => {
+      const linked = MemoryEngine.autoLinkSemanticNodes(memories, 0.2);
+      linked.forEach((node) => {
+        const orig = memories.find((m) => m.id === node.id);
+        if (orig && node.linkedNodeIds.length !== orig.linkedNodeIds.length) {
+          orig.linkedNodeIds = [...node.linkedNodeIds];
+        }
+      });
+      setIsAutoLinking(false);
+      setAutoLinkMessage("Synthesized semantic connections across related concepts (e.g. Java <-> Java Programs)");
+      setTimeout(() => setAutoLinkMessage(null), 4000);
+
+      veronicaStore.logAuditEvent({
+        agentRole: "MEMORY AGENT",
+        agentName: "Synthesizer",
+        action: "Synthesized Semantic Memory Graph Links",
+        impactLevel: "LOW",
+        confirmationRequired: false,
+        status: "SUCCESS",
+        details: "Auto-linked semantic neighbors based on concept overlap and tag affinity.",
+      });
+    }, 600);
+  };
+
   return (
     <div className="space-y-8 max-w-6xl mx-auto py-2 font-sans text-[#2D3A31]">
       {/* Header & Controls */}
@@ -87,11 +116,11 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ memories }) => {
             Memory <span className="italic text-[#8C9A84]">Cosmos</span>
           </h2>
           <p className="text-xs sm:text-sm text-[#2D3A31]/70 mt-1">
-            6 cognitive tiers with continuous Bayesian weights and strict provenance tracking.
+            6 cognitive tiers with semantic node linking (e.g. Java &lt;-&gt; Java Programs) and Bayesian provenance.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {/* 3D vs Grid Toggle */}
           <div className="flex bg-[#F2F0EB] border border-[#E6E2DA] rounded-full p-1 shadow-sm">
             <button
@@ -121,14 +150,31 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ memories }) => {
           </div>
 
           <button
+            onClick={handleAutoLinkSemanticNeighbors}
+            disabled={isAutoLinking}
+            className="px-4 py-2 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-semibold text-[#2D3A31] transition-colors flex items-center gap-1.5 shadow-sm"
+            title="Automatically link similar concepts like Java and Java Programs"
+          >
+            <Sparkles className={cn("w-3.5 h-3.5 text-[#8C9A84]", isAutoLinking && "animate-spin")} />
+            <span>{isAutoLinking ? "Linking..." : "⚡ Auto-Link Semantic Neighbors"}</span>
+          </button>
+
+          <button
             onClick={() => setIsAddModalOpen(true)}
-            className="botanical-btn-primary py-2 px-4 text-xs font-semibold"
+            className="botanical-btn-primary py-2 px-4 text-xs font-semibold shadow-sm"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Memory</span>
           </button>
         </div>
       </div>
+
+      {autoLinkMessage && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs flex items-center gap-2 animate-in fade-in">
+          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>{autoLinkMessage}</span>
+        </div>
+      )}
 
       {/* Tier Distribution Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
@@ -206,6 +252,29 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ memories }) => {
                 <p className="text-xs sm:text-sm text-[#2D3A31] leading-relaxed font-normal">
                   {m.content}
                 </p>
+
+                {/* Semantic Linked Nodes Badges */}
+                {m.linkedNodeIds && m.linkedNodeIds.length > 0 && (
+                  <div className="pt-2 border-t border-[#E6E2DA]/60 space-y-1">
+                    <span className="text-[10px] font-semibold text-[#8C9A84] uppercase tracking-wider block">
+                      Semantic Connections:
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {m.linkedNodeIds.map((linkId) => {
+                        const targetNode = memories.find((x) => x.id === linkId);
+                        return (
+                          <span
+                            key={linkId}
+                            className="text-[10px] px-2 py-0.5 bg-[#F2F0EB] text-[#2D3A31] rounded-full border border-[#E6E2DA] truncate max-w-[200px]"
+                            title={targetNode ? targetNode.content : linkId}
+                          >
+                            🔗 {targetNode ? targetNode.content.slice(0, 24) + "..." : linkId}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-3 border-t border-[#E6E2DA] flex items-center justify-between text-xs text-[#2D3A31]/70">

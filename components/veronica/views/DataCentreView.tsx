@@ -117,6 +117,264 @@ const GENERATOR_DOMAINS: {
 ];
 
 // Helper to generate realistic synthetic dataset
+// Helper to generate dynamic dataset on ANY topic without limit
+function generateAnyTopicDataset(
+  topicPrompt: string,
+  sampleCount: number,
+  distribution: SyntheticDataDistribution,
+  noiseLevel: number
+): SyntheticDataset {
+  const p = topicPrompt.toLowerCase();
+
+  // 1. Bike Models & Specs Dataset
+  if (p.includes("bike") || p.includes("motorcycle")) {
+    const brands = [
+      { brand: "Yamaha R15 V4", cc: 155, topSpeed: 145, mileage: 45.2, price: 2300, tier: "SPORT_COMMUTER" },
+      { brand: "Kawasaki Ninja ZX-10R", cc: 998, topSpeed: 299, mileage: 14.8, price: 18500, tier: "SUPERSPORT_TRACK" },
+      { brand: "Honda CBR650R", cc: 649, topSpeed: 220, mileage: 21.5, price: 9200, tier: "MIDDLEWEIGHT_SPORT" },
+      { brand: "Ducati Panigale V4", cc: 1103, topSpeed: 305, mileage: 12.5, price: 24900, tier: "EXOTIC_HYPERBIKE" },
+      { brand: "BMW S1000RR", cc: 999, topSpeed: 303, mileage: 15.2, price: 19800, tier: "SUPERSPORT_TRACK" },
+      { brand: "Royal Enfield GT 650", cc: 648, topSpeed: 175, mileage: 25.0, price: 4200, tier: "CAFE_RACER" },
+      { brand: "KTM RC 390", cc: 373, topSpeed: 170, mileage: 28.5, price: 3800, tier: "SPORT_LIGHTWEIGHT" },
+      { brand: "Triumph Bonneville T120", cc: 1200, topSpeed: 195, mileage: 22.0, price: 12500, tier: "MODERN_CLASSIC" },
+      { brand: "Harley-Davidson Fat Boy", cc: 1868, topSpeed: 175, mileage: 18.2, price: 20500, tier: "POWER_CRUISER" },
+      { brand: "Suzuki Hayabusa", cc: 1340, topSpeed: 299, mileage: 15.0, price: 17800, tier: "HYPER_TOURER" }
+    ];
+    const featureNames = ["Brand_Model", "Engine_Displacement_CC", "Top_Speed_KMH", "Mileage_KMPL", "Price_USD"];
+    const records: GeneratedDataRecord[] = [];
+
+    for (let i = 0; i < sampleCount; i++) {
+      const base = brands[i % brands.length];
+      const noise = (Math.random() * 2 - 1) * noiseLevel;
+      const cc = Math.round(base.cc * (1 + noise * 0.05));
+      const speed = Math.round(base.topSpeed * (1 + noise * 0.05));
+      const mileage = +(base.mileage * (1 + noise * 0.08)).toFixed(1);
+      const price = Math.round(base.price * (1 + noise * 0.1));
+
+      records.push({
+        id: `bike_${String(i + 1).padStart(4, "0")}`,
+        timestamp: new Date(Date.now() - (sampleCount - i) * 60000).toISOString().slice(0, 19).replace("T", " "),
+        features: {
+          "Brand_Model": base.brand,
+          "Engine_Displacement_CC": cc,
+          "Top_Speed_KMH": speed,
+          "Mileage_KMPL": mileage,
+          "Price_USD": price,
+        },
+        target: base.tier,
+        metadata: {
+          entropy: +(0.06 + Math.random() * 0.05).toFixed(2),
+          confidence: +(0.95 + Math.random() * 0.04).toFixed(2),
+        }
+      });
+    }
+
+    return {
+      id: `ds_bike_${Date.now()}`,
+      title: `Bike Models & 5-Attribute Specifications Dataset (${sampleCount} Records)`,
+      domain: "ML_CLASSIFICATION",
+      distribution,
+      sampleCount,
+      featureCount: 5,
+      featureNames,
+      targetName: "Performance_Category",
+      records,
+      createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+      metrics: {
+        meanEntropy: 0.085,
+        classBalanceRatio: "99.4% Balanced",
+        missingValues: 0
+      }
+    };
+  }
+
+  // 2. E-Commerce Orders
+  if (p.includes("ecommerce") || p.includes("e-commerce") || p.includes("order") || p.includes("shop")) {
+    const paymentMethods = ["Credit Card", "Apple Pay", "PayPal", "Crypto", "UPI / Debit"];
+    const featureNames = ["Items_Count", "Cart_Value_USD", "Discount_Pct", "Delivery_Days", "Customer_Loyalty_Score", "Payment_Method"];
+    const records: GeneratedDataRecord[] = [];
+
+    for (let i = 0; i < sampleCount; i++) {
+      const items = Math.round(1 + Math.random() * 8);
+      const cartVal = +(25 + items * 45 + Math.random() * 60).toFixed(2);
+      const discount = Math.round(Math.random() * 30);
+      const delivery = Math.round(1 + Math.random() * 6);
+      const loyalty = +(40 + Math.random() * 60).toFixed(1);
+      const payment = paymentMethods[i % paymentMethods.length];
+      const target = +cartVal > 180 ? "HIGH_VALUE_VIP" : +cartVal > 75 ? "STANDARD_ORDER" : "MICRO_TRANSACTION";
+
+      records.push({
+        id: `ord_${String(i + 1).padStart(4, "0")}`,
+        timestamp: new Date(Date.now() - (sampleCount - i) * 60000).toISOString().slice(0, 19).replace("T", " "),
+        features: {
+          "Items_Count": items,
+          "Cart_Value_USD": cartVal,
+          "Discount_Pct": discount,
+          "Delivery_Days": delivery,
+          "Customer_Loyalty_Score": loyalty,
+          "Payment_Method": payment,
+        },
+        target,
+        metadata: { entropy: 0.12, confidence: 0.94 }
+      });
+    }
+
+    return {
+      id: `ds_ecom_${Date.now()}`,
+      title: `E-Commerce Orders & Transactions (${sampleCount} Records)`,
+      domain: "ML_CLASSIFICATION",
+      distribution,
+      sampleCount,
+      featureCount: 6,
+      featureNames,
+      targetName: "Order_Segment",
+      records,
+      createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+      metrics: { meanEntropy: 0.12, classBalanceRatio: "98.8% Balanced", missingValues: 0 }
+    };
+  }
+
+  // 3. Clinical Patient Data
+  if (p.includes("patient") || p.includes("medical") || p.includes("health") || p.includes("hospital")) {
+    const featureNames = ["Patient_Age", "Systolic_BP", "Cholesterol_mgdl", "Blood_Glucose", "BMI_Index"];
+    const records: GeneratedDataRecord[] = [];
+
+    for (let i = 0; i < sampleCount; i++) {
+      const age = Math.round(22 + Math.random() * 60);
+      const bp = Math.round(105 + (age / 80) * 35 + (Math.random() * 20 - 10));
+      const chol = Math.round(160 + (age / 70) * 60 + (Math.random() * 30 - 15));
+      const glucose = Math.round(80 + Math.random() * 70);
+      const bmi = +(20 + Math.random() * 14).toFixed(1);
+      const target = bp > 140 || glucose > 130 || bmi > 30 ? "HIGH_RISK_INTERVENTION" : bp > 125 ? "MODERATE_MONITOR" : "OPTIMAL_HEALTH";
+
+      records.push({
+        id: `med_${String(i + 1).padStart(4, "0")}`,
+        timestamp: new Date(Date.now() - (sampleCount - i) * 60000).toISOString().slice(0, 19).replace("T", " "),
+        features: {
+          "Patient_Age": age,
+          "Systolic_BP": bp,
+          "Cholesterol_mgdl": chol,
+          "Blood_Glucose": glucose,
+          "BMI_Index": bmi,
+        },
+        target,
+        metadata: { entropy: 0.09, confidence: 0.96 }
+      });
+    }
+
+    return {
+      id: `ds_med_${Date.now()}`,
+      title: `Clinical Patient Telemetry Dataset (${sampleCount} Records)`,
+      domain: "ML_CLASSIFICATION",
+      distribution,
+      sampleCount,
+      featureCount: 5,
+      featureNames,
+      targetName: "Health_Risk_Category",
+      records,
+      createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+      metrics: { meanEntropy: 0.09, classBalanceRatio: "97.5% Balanced", missingValues: 0 }
+    };
+  }
+
+  // 4. Electric Vehicles
+  if (p.includes("ev") || p.includes("electric") || p.includes("tesla")) {
+    const models = ["Tesla Model S Plaid", "Lucid Air Sapphire", "Porsche Taycan Turbo", "Hyundai Ioniq 5", "Rivian R1T", "BMW i4 M50"];
+    const featureNames = ["EV_Model", "Battery_Capacity_KWh", "Range_KM", "Charge_Time_0_80_Mins", "Horsepower_BHP", "MSRP_USD"];
+    const records: GeneratedDataRecord[] = [];
+
+    for (let i = 0; i < sampleCount; i++) {
+      const model = models[i % models.length];
+      const isHighEnd = model.includes("Lucid") || model.includes("Plaid") || model.includes("Porsche");
+      const kwh = isHighEnd ? Math.round(95 + Math.random() * 25) : Math.round(58 + Math.random() * 25);
+      const range = Math.round(kwh * 5.4 + (Math.random() * 40 - 20));
+      const chargeTime = Math.round(18 + Math.random() * 16);
+      const hp = isHighEnd ? Math.round(650 + Math.random() * 400) : Math.round(220 + Math.random() * 150);
+      const price = isHighEnd ? Math.round(88000 + Math.random() * 40000) : Math.round(42000 + Math.random() * 15000);
+      const target = isHighEnd ? "ULTRA_LUXURY_PERFORMANCE" : "MASS_MARKET_STANDARD";
+
+      records.push({
+        id: `ev_${String(i + 1).padStart(4, "0")}`,
+        timestamp: new Date(Date.now() - (sampleCount - i) * 60000).toISOString().slice(0, 19).replace("T", " "),
+        features: {
+          "EV_Model": model,
+          "Battery_Capacity_KWh": kwh,
+          "Range_KM": range,
+          "Charge_Time_0_80_Mins": chargeTime,
+          "Horsepower_BHP": hp,
+          "MSRP_USD": price,
+        },
+        target,
+        metadata: { entropy: 0.08, confidence: 0.97 }
+      });
+    }
+
+    return {
+      id: `ds_ev_${Date.now()}`,
+      title: `Electric Vehicles Specifications Dataset (${sampleCount} Records)`,
+      domain: "ML_CLASSIFICATION",
+      distribution,
+      sampleCount,
+      featureCount: 6,
+      featureNames,
+      targetName: "Vehicle_Segment",
+      records,
+      createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+      metrics: { meanEntropy: 0.08, classBalanceRatio: "99.0% Balanced", missingValues: 0 }
+    };
+  }
+
+  // 5. General Arbitrary Topic Synthesizer for ANY OTHER PROMPT
+  const words = topicPrompt.replace(/[^a-zA-Z0-9 ]/g, "").split(" ").filter((w) => w.length > 2);
+  const mainSubject = words[0] ? words[0].charAt(0).toUpperCase() + words[0].slice(1) : "Entity";
+  const featureNames = [
+    `${mainSubject}_Attribute_1`,
+    `${mainSubject}_Magnitude_Metric`,
+    `${mainSubject}_Throughput_Index`,
+    `${mainSubject}_Efficiency_Pct`,
+    `${mainSubject}_Confidence_Weight`,
+  ];
+  const records: GeneratedDataRecord[] = [];
+
+  for (let i = 0; i < sampleCount; i++) {
+    const val1 = Math.round(10 + Math.random() * 90);
+    const val2 = +(50 + Math.random() * 200).toFixed(2);
+    const val3 = +(0.1 + Math.random() * 0.9).toFixed(3);
+    const val4 = +(75 + Math.random() * 24).toFixed(1);
+    const val5 = +(0.8 + Math.random() * 0.19).toFixed(2);
+    const target = val4 > 90 ? "TIER_A_OPTIMAL" : val4 > 80 ? "TIER_B_STABLE" : "TIER_C_EVALUATE";
+
+    records.push({
+      id: `rec_${String(i + 1).padStart(4, "0")}`,
+      timestamp: new Date(Date.now() - (sampleCount - i) * 60000).toISOString().slice(0, 19).replace("T", " "),
+      features: {
+        [featureNames[0]]: val1,
+        [featureNames[1]]: val2,
+        [featureNames[2]]: val3,
+        [featureNames[3]]: val4,
+        [featureNames[4]]: val5,
+      },
+      target,
+      metadata: { entropy: 0.14, confidence: 0.93 }
+    });
+  }
+
+  return {
+    id: `ds_custom_${Date.now()}`,
+    title: `Custom Dataset: ${topicPrompt.slice(0, 45)} (${sampleCount} Records)`,
+    domain: "ML_CLASSIFICATION",
+    distribution,
+    sampleCount,
+    featureCount: 5,
+    featureNames,
+    targetName: "Synthesized_Target_Class",
+    records,
+    createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
+    metrics: { meanEntropy: 0.14, classBalanceRatio: "98.0% Balanced", missingValues: 0 }
+  };
+}
+
+// Helper to generate realistic standard synthetic dataset
 function generateSyntheticDataset(
   domain: SyntheticDataDomain,
   sampleCount: number,
@@ -231,6 +489,10 @@ export const DataCentreView: React.FC<DataCentreViewProps> = ({
   // Navigation Tabs: GENERATOR vs MODEL_TRAINING vs CHAT_CORPUS
   const [activeTab, setActiveTab] = useState<"GENERATOR" | "MODEL_TRAINING" | "CHAT_CORPUS">("GENERATOR");
 
+  // Custom Prompt Dataset Generator State
+  const [customTopicPrompt, setCustomTopicPrompt] = useState<string>("Generate dataset on bike models with five attributes (Brand, Engine CC, Top Speed, Mileage, Price)");
+  const [isGeneratingCustom, setIsGeneratingCustom] = useState<boolean>(false);
+
   // Generator State
   const [selectedDomain, setSelectedDomain] = useState<SyntheticDataDomain>("ML_CLASSIFICATION");
   const [sampleCount, setSampleCount] = useState<number>(250);
@@ -238,7 +500,7 @@ export const DataCentreView: React.FC<DataCentreViewProps> = ({
   const [noiseLevel, setNoiseLevel] = useState<number>(0.1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedDataset, setGeneratedDataset] = useState<SyntheticDataset>(() =>
-    generateSyntheticDataset("ML_CLASSIFICATION", 250, "GAUSSIAN_MIXTURE", 0.1)
+    generateAnyTopicDataset("Bike models with 5 attributes", 250, "GAUSSIAN_MIXTURE", 0.1)
   );
 
   // Model Training Studio State
@@ -267,7 +529,7 @@ export const DataCentreView: React.FC<DataCentreViewProps> = ({
   const [isFeedingModels, setIsFeedingModels] = useState(false);
   const [feedSuccess, setFeedSuccess] = useState(false);
 
-  // Handle Generate Dataset
+  // Handle Generate Dataset from Domain Selector
   const handleGenerateData = () => {
     setIsGenerating(true);
     setTimeout(() => {
@@ -284,7 +546,30 @@ export const DataCentreView: React.FC<DataCentreViewProps> = ({
         status: "SUCCESS",
         details: `Synthesized ${newDs.sampleCount} rows with ${newDs.featureCount} normalized features under ${newDs.distribution} distribution.`,
       });
-    }, 600);
+    }, 400);
+  };
+
+  // Handle Generate Custom Topic Dataset on ANY topic
+  const handleGenerateCustomTopic = (promptOverride?: string) => {
+    const p = promptOverride || customTopicPrompt;
+    if (!p.trim()) return;
+
+    setIsGeneratingCustom(true);
+    setTimeout(() => {
+      const newDs = generateAnyTopicDataset(p, sampleCount, distribution, noiseLevel);
+      setGeneratedDataset(newDs);
+      setIsGeneratingCustom(false);
+
+      veronicaStore.logAuditEvent({
+        agentRole: "RESEARCH AGENT",
+        agentName: "Dynamic Dataset Engine",
+        action: `Synthesized Custom Topic Dataset: "${p.slice(0, 40)}..."`,
+        impactLevel: "MEDIUM",
+        confirmationRequired: false,
+        status: "SUCCESS",
+        details: `Generated ${newDs.sampleCount} rows with ${newDs.featureCount} custom attributes: ${newDs.featureNames.join(", ")}.`,
+      });
+    }, 400);
   };
 
   // Handle Start Model Training
@@ -533,6 +818,68 @@ export const DataCentreView: React.FC<DataCentreViewProps> = ({
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+
+            {/* Dynamic Custom Topic Synthesizer Bar */}
+            <div className="p-5 bg-[#F9F8F4] border border-[#E6E2DA] rounded-[24px] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#2D3A31] uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[#8C9A84]" />
+                  <span>Dynamic Custom Dataset Prompt (Unlimited Topics)</span>
+                </span>
+                <span className="text-[11px] text-[#8C9A84] font-mono">Any domain, e.g. Bike Models, EVs, Healthcare</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <input
+                  type="text"
+                  value={customTopicPrompt}
+                  onChange={(e) => setCustomTopicPrompt(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleGenerateCustomTopic()}
+                  placeholder="e.g. Generate dataset on bike models with five attributes, or EV specs with 6 features..."
+                  className="w-full bg-[#FFFFFF] border border-[#E6E2DA] rounded-xl px-4 py-2.5 text-xs text-[#2D3A31] placeholder:text-[#2D3A31]/50 focus:outline-none focus:border-[#8C9A84]"
+                />
+                <button
+                  onClick={() => handleGenerateCustomTopic()}
+                  disabled={isGeneratingCustom || !customTopicPrompt.trim()}
+                  className="w-full sm:w-auto whitespace-nowrap botanical-btn-primary py-2.5 px-6 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-40 cursor-pointer"
+                >
+                  {isGeneratingCustom ? (
+                    <>
+                      <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Synthesizing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Generate Topic Dataset</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Quick Prompt Presets */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] text-[#2D3A31]/60 font-semibold uppercase">Presets:</span>
+                {[
+                  { label: "🏍️ Bike Models (5 Attributes)", p: "Generate dataset on bike models with 5 attributes (Brand, Engine CC, Top Speed, Mileage, Price)" },
+                  { label: "🛒 E-Commerce Orders (6 Attributes)", p: "Generate dataset on e-commerce orders with 6 attributes (Items, Cart Value, Discount, Delivery Days, Loyalty, Payment)" },
+                  { label: "🏥 Patient Clinical Metrics (5 Attributes)", p: "Generate dataset on clinical patients with 5 attributes (Age, Blood Pressure, Cholesterol, Glucose, BMI)" },
+                  { label: "⚡ Electric Vehicles (6 Attributes)", p: "Generate dataset on electric vehicles with 6 attributes (Model, Battery KWh, Range KM, Charge Time, Horsepower, MSRP)" },
+                  { label: "📈 Crypto Asset Telemetry (5 Attributes)", p: "Generate dataset on cryptocurrency assets with 5 attributes (Symbol, 24h Volume, RSI 14D, MACD Signal, Volatility)" },
+                ].map((preset, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setCustomTopicPrompt(preset.p);
+                      handleGenerateCustomTopic(preset.p);
+                    }}
+                    className="text-[11px] px-2.5 py-1 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-lg text-[#2D3A31] transition-colors cursor-pointer"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
               </div>
             </div>
 

@@ -329,9 +329,11 @@ export type CouncilArchetype =
 export interface CouncilMember {
   id: string;
   name: string;
+  characterTitle: string; // e.g. "AI Research Scientist"
   title: string;
   archetype: CouncilArchetype;
   role: string;
+  specialization: string;
   motto: string;
   avatarColor: string;
   aiCore: "SPEED_RAG" | "GAN" | "RNN" | "RLHF" | "SYNTHESIZER";
@@ -343,10 +345,13 @@ export interface CouncilMember {
 export interface CouncilMemberVerdict {
   memberId: string;
   memberName: string;
+  characterTitle?: string;
   archetype: CouncilArchetype;
   confidence: number; // 0-100
   verdict: "ENDORSE" | "SCRUTINIZE" | "ADAPT" | "ALIGN" | "SYNTHESIZE";
   argument: string;
+  critiquesAgainstOthers?: { targetMemberName: string; targetRole: string; critiqueText: string }[];
+  remedyRecommendation?: string;
   keyMetric: string;
   aiEngineDetail: string;
 }
@@ -364,9 +369,42 @@ export interface CouncilDebateResult {
   ganDiscriminatorScore: number;
   rnnTemporalPredictability: number;
   rlhfRewardAlignment: number;
+  dialogueTranscript?: {
+    speakerName: string;
+    speakerRole: string;
+    text: string;
+    isCritique?: boolean;
+  }[];
 }
 
-export type StudioToolType = "IMAGE" | "AUDIO" | "PDF" | "PPT" | "GMAIL";
+export type StudioToolType = "IMAGE" | "AUDIO" | "PDF" | "PPT" | "GMAIL" | "FLIP_CARDS" | "SOUND_ENGINEERING";
+
+export interface FlipCardItem {
+  id: string;
+  frontTitle: string;
+  frontCategory: string;
+  frontPrompt: string;
+  backConcept: string;
+  backExplanation: string;
+  backCodeSnippet?: string;
+  masteryLevel: "NEW" | "REVIEWING" | "MASTERED";
+}
+
+export interface PresentationDeck {
+  id: string;
+  title: string;
+  subtitle: string;
+  author: string;
+  theme: "botanical" | "midnight" | "emerald";
+  slides: {
+    slideNumber: number;
+    title: string;
+    subtitle?: string;
+    bullets: string[];
+    codeBlock?: string;
+    note?: string;
+  }[];
+}
 
 export interface GeneratedImageItem {
   id: string;

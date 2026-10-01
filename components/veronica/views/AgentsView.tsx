@@ -35,6 +35,7 @@ import {
 } from "@/lib/agents/agent-interface";
 import { agentRegistry } from "@/lib/agents/agent-registry";
 import { veronicaStore } from "@/lib/veronica-store";
+import { MarkdownViewer } from "@/components/veronica/ui/MarkdownViewer";
 
 interface AgentsViewProps {
   onNavigateView?: (view: string) => void;
@@ -724,10 +725,10 @@ export function AgentsView({ onNavigateView }: AgentsViewProps) {
               {/* Formatted Result Payload */}
               <div className="space-y-2">
                 <span className="text-xs font-bold uppercase text-[#2D3A31]/70 tracking-wider">
-                  Structured Result Deliverable
+                  Structured Result Deliverable (Rendered Markdown)
                 </span>
-                <div className="bg-[#1B241E] border border-[#2D3A31] rounded-2xl p-5 text-emerald-400 text-xs font-mono overflow-x-auto max-h-[480px] whitespace-pre-wrap leading-relaxed">
-                  {taskResult.finalOutput}
+                <div className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl p-6 shadow-sm overflow-x-auto max-h-[560px] overflow-y-auto">
+                  <MarkdownViewer content={taskResult.finalOutput} />
                 </div>
               </div>
             </div>
@@ -790,8 +791,8 @@ export function AgentsView({ onNavigateView }: AgentsViewProps) {
 
                   <p className="text-xs text-[#2D3A31] font-semibold">{item.objective}</p>
 
-                  <div className="bg-[#1B241E] p-3 rounded-xl text-emerald-400 text-[11px] font-mono max-h-36 overflow-y-auto whitespace-pre-wrap">
-                    {item.finalOutput.slice(0, 500)}...
+                  <div className="bg-[#FFFFFF] p-4 rounded-xl border border-[#E6E2DA] max-h-48 overflow-y-auto">
+                    <MarkdownViewer content={item.finalOutput} />
                   </div>
 
                   <div className="flex items-center justify-end gap-2 pt-2">

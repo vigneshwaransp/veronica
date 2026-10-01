@@ -33,6 +33,7 @@ import {
   AgentState,
   LangGraphStepTrace
 } from "@/lib/langgraph/graph-types";
+import { MarkdownViewer } from "@/components/veronica/ui/MarkdownViewer";
 
 interface LangGraphStudioViewProps {
   onNavigateView?: (view: string) => void;
@@ -52,6 +53,7 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
 
   const selectedTopology =
     topologies.find((t) => t.id === selectedTopologyId) || topologies[0];
+  const activeTopology = executionResult?.customTopology || selectedTopology;
 
   const handleSelectTopology = (topo: GraphTopologyDefinition) => {
     setSelectedTopologyId(topo.id);
@@ -271,9 +273,27 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
           rows={3}
           value={objective}
           onChange={(e) => setObjective(e.target.value)}
-          placeholder="Enter multi-agent objective prompt..."
+          placeholder="Enter multi-agent objective prompt (e.g. 'Build an advanced Hybrid RAG system with query decomposition and cross-encoder reranking')..."
           className="w-full p-4 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl text-xs text-[#2D3A31] focus:ring-1 focus:ring-[#8C9A84] focus:outline-none resize-none font-sans"
         />
+
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          <span className="text-[10px] text-[#2D3A31]/60 font-mono">Quick Blueprints:</span>
+          {[
+            { label: "Hybrid RAG Pipeline", text: "Build an advanced Hybrid RAG system with query decomposition, dense/sparse retrieval, and cross-encoder reranking." },
+            { label: "Code Refactor Swarm", text: "Execute autonomous multi-agent code refactoring with AST static analysis and strict zero-any TypeScript validation." },
+            { label: "Adversarial Threat Model", text: "Perform adversarial red-team security review and zero-trust protocol threat modeling for cloud APIs." },
+          ].map((preset) => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => setObjective(preset.text)}
+              className="text-[10px] px-2.5 py-1 bg-[#F2F0EB] hover:bg-[#E6E2DA] rounded-lg text-[#2D3A31] border border-[#E6E2DA] font-mono cursor-pointer transition-all"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Workspace Tab Content */}
@@ -285,18 +305,18 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-bold font-mono text-emerald-400">
-                  {selectedTopology.name.toUpperCase()} (DAG TOPOLOGY)
+                  {activeTopology.name.toUpperCase()} (DAG TOPOLOGY)
                 </span>
               </div>
               <span className="text-[10px] text-white/50 font-mono">
-                {selectedTopology.nodes.length} Nodes • {selectedTopology.edges.length} Edges
+                {activeTopology.nodes.length} Nodes • {activeTopology.edges.length} Edges
               </span>
             </div>
 
             {/* Nodes Chain Flow */}
             <div className="py-8 overflow-x-auto">
               <div className="flex items-center justify-between min-w-[800px] gap-4 relative">
-                {selectedTopology.nodes.map((node, idx) => {
+                {activeTopology.nodes.map((node, idx) => {
                   const isNodeExecuted = executionResult?.executionTrace.some(
                     (t) => t.nodeId === node.id || (node.type === "synthesizer" && t.nodeType === "synthesizer")
                   );
@@ -332,13 +352,13 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
                       </div>
 
                       {/* Edge Connector */}
-                      {idx < selectedTopology.nodes.length - 1 && (
+                      {idx < activeTopology.nodes.length - 1 && (
                         <div className="flex-1 flex flex-col items-center justify-center min-w-[40px] px-1">
                           <div className="w-full h-0.5 bg-gradient-to-r from-emerald-500/40 to-emerald-500/80 relative">
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-6 border-l-emerald-400" />
                           </div>
                           <span className="text-[9px] font-mono text-emerald-400/80 mt-1">
-                            {selectedTopology.edges[idx]?.label?.slice(0, 15)}
+                            {activeTopology.edges[idx]?.label?.slice(0, 15)}
                           </span>
                         </div>
                       )}
@@ -349,15 +369,13 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
             </div>
 
             {/* Loopback indicator */}
-            {selectedTopology.id === "supervisor_worker_critic" && (
-              <div className="pt-3 border-t border-[#2D3A31]/70 flex items-center justify-between text-xs font-mono text-amber-400/90">
-                <div className="flex items-center gap-2">
-                  <RotateCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>Adversarial Self-Correction Loopback: If Rigor Score &lt; 85%, state routes back to Synthesizer with constructive guidance.</span>
-                </div>
-                <span className="text-[10px] text-white/50">Strict Enterprise Validation</span>
+            <div className="pt-3 border-t border-[#2D3A31]/70 flex items-center justify-between text-xs font-mono text-amber-400/90">
+              <div className="flex items-center gap-2">
+                <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                <span>Adversarial Self-Correction Loopback: State verified through cyclical routing and critique evaluation.</span>
               </div>
-            )}
+              <span className="text-[10px] text-white/50">Dynamic State Validation</span>
+            </div>
           </div>
 
           {/* Execution Trace Cards */}
@@ -479,8 +497,8 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
                       </span>
                     </div>
 
-                    <div className="bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl p-4 text-xs text-[#2D3A31] max-h-72 overflow-y-auto whitespace-pre-wrap leading-relaxed font-mono">
-                      {executionResult.finalState.finalOutput}
+                    <div className="bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl p-4 text-xs text-[#2D3A31] max-h-96 overflow-y-auto leading-relaxed font-sans">
+                      <MarkdownViewer content={executionResult.finalState.finalOutput} />
                     </div>
                   </div>
                 )}

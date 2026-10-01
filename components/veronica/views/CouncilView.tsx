@@ -24,6 +24,8 @@ import {
   Check
 } from "lucide-react";
 
+import { MarkdownViewer } from "@/components/veronica/ui/MarkdownViewer";
+
 interface CouncilViewProps {
   councilMembers: CouncilMember[];
   councilDebates: CouncilDebateResult[];
@@ -41,6 +43,7 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
     debates[0] || veronicaStore.getCouncilDebates()[0]
   );
   const [activeEngineTab, setActiveEngineTab] = useState<"SPEED_RAG" | "GAN" | "RNN" | "RLHF">("SPEED_RAG");
+  const [councilTab, setCouncilTab] = useState<"DEBATE" | "VERDICTS" | "ROSTER">("DEBATE");
 
   const PRESET_QUESTIONS = [
     {
@@ -55,6 +58,10 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
       title: "Microservices vs Sovereign Monolith",
       q: "Should we decompose VERONICA's background agent cluster into independent micro-services or maintain a unified modular monolith?",
     },
+    {
+      title: "Hybrid RAG vs Full Context Window",
+      q: "Should we rely on sub-millisecond Speed-RAG chunk indexing or feed complete raw 1M-token context windows into the foundation model?",
+    }
   ];
 
   const handleConveneCouncil = async (qText?: string) => {
@@ -89,7 +96,7 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
       console.warn("Council debate API error, falling back to local evaluation:", e);
     }
 
-    // Dynamic heuristic fallback
+    // Dynamic heuristic fallback with full character profiles
     const result = veronicaStore.evaluateCouncilQuestion(query);
     setDebates(veronicaStore.getCouncilDebates());
     setActiveDebate(result);
@@ -100,15 +107,15 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
   const getVerdictBadge = (verdict: CouncilMemberVerdict["verdict"]) => {
     switch (verdict) {
       case "ENDORSE":
-        return "bg-[#8C9A84]/15 text-[#8C9A84] border-[#8C9A84]/30";
+        return "bg-emerald-100 text-emerald-800 border-emerald-300";
       case "ALIGN":
-        return "bg-[#5A6B5C]/15 text-[#5A6B5C] border-[#5A6B5C]/30";
+        return "bg-teal-100 text-teal-800 border-teal-300";
       case "SCRUTINIZE":
-        return "bg-[#C27B66]/15 text-[#C27B66] border-[#C27B66]/30";
+        return "bg-rose-100 text-rose-800 border-rose-300";
       case "ADAPT":
-        return "bg-[#D18E7B]/15 text-[#C27B66] border-[#D18E7B]/30";
+        return "bg-amber-100 text-amber-800 border-amber-300";
       case "SYNTHESIZE":
-        return "bg-[#2D3A31]/10 text-[#2D3A31] border-[#2D3A31]/30 font-bold";
+        return "bg-[#2D3A31] text-[#FFFFFF] border-[#2D3A31] font-bold";
       default:
         return "bg-[#F2F0EB] text-[#2D3A31] border-[#E6E2DA]";
     }
@@ -122,21 +129,21 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2.5 h-2.5 rounded-full bg-[#8C9A84] animate-pulse" />
             <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider">
-              Autonomous Governance
+              Character-Driven Governance
             </span>
           </div>
           <h2 className="text-3xl font-serif font-bold text-[#2D3A31]">
-            The Cognitive <span className="font-cursive text-4xl text-[#8C9A84] ml-1">Council</span>
+            The 5-Specialist <span className="font-cursive text-4xl text-[#8C9A84] ml-1">Council</span>
           </h2>
           <p className="text-xs sm:text-sm text-[#2D3A31]/70 mt-1">
-            Every proposal is evaluated in real time by 5 specialized AI council members across Speed-RAG, GAN, RNN, and RLHF.
+            5 distinct specialist characters debating and actively critiquing each other: Research Scientist, Systems Engineer, Security Architect, Optimization Specialist, and Product Strategist.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="px-3.5 py-1.5 bg-[#FFFFFF] border border-[#E6E2DA] rounded-full text-xs font-semibold text-[#2D3A31] shadow-sm flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5 text-[#8C9A84]" />
-            <span>5 Active Council Seats</span>
+            <span>5 Active Specialists</span>
           </span>
         </div>
       </div>
@@ -146,9 +153,9 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider flex items-center gap-1.5">
             <Sparkles className="w-4 h-4 text-[#8C9A84]" />
-            <span>Submit Proposal to The 5-Agent Council</span>
+            <span>Submit Proposal to The 5-Specialist Council</span>
           </span>
-          <span className="text-xs text-[#2D3A31]/60">Parallel Multi-Agent Evaluation</span>
+          <span className="text-xs text-[#2D3A31]/60 font-mono">Parallel Adversarial Deliberation</span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -157,19 +164,19 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
             value={questionInput}
             onChange={(e) => setQuestionInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleConveneCouncil()}
-            placeholder="Pose a strategic question, technical dilemma, or architectural decision..."
+            placeholder="Pose a strategic dilemma, architectural question, or engineering dispute..."
             className="w-full bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl px-4 py-3.5 text-xs sm:text-sm text-[#2D3A31] placeholder:text-[#2D3A31]/50 focus:outline-none focus:border-[#8C9A84] transition-all"
           />
 
           <button
             onClick={() => handleConveneCouncil()}
             disabled={!questionInput.trim() || isDeliberating}
-            className="w-full sm:w-auto whitespace-nowrap botanical-btn-primary py-3.5 px-7 text-xs font-semibold rounded-full disabled:opacity-40 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto whitespace-nowrap botanical-btn-primary py-3.5 px-7 text-xs font-semibold rounded-full disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
           >
             {isDeliberating ? (
               <>
                 <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Deliberating...</span>
+                <span>Specialists Debating...</span>
               </>
             ) : (
               <>
@@ -187,7 +194,7 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
             <button
               key={idx}
               onClick={() => handleConveneCouncil(pq.q)}
-              className="text-[11px] px-3 py-1 bg-[#F9F8F4] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-[#2D3A31] transition-colors"
+              className="text-[11px] px-3 py-1 bg-[#F9F8F4] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-[#2D3A31] transition-colors cursor-pointer"
             >
               {pq.title}
             </button>
@@ -195,14 +202,14 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
         </div>
       </div>
 
-      {/* 3. The 5 Council Members Roster */}
+      {/* 3. The 5 Council Characters Roster */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-serif font-bold text-[#2D3A31]">
-            Council Members & Specialized AI Engines
+            Specialist Council Characters
           </h3>
           <span className="text-xs text-[#8C9A84] font-semibold">
-            Individual Perspectives & Weights
+            5 Distinct Intellectual Archetypes
           </span>
         </div>
 
@@ -214,26 +221,32 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span
-                    className="w-3 h-3 rounded-full inline-block"
-                    style={{ backgroundColor: m.avatarColor }}
-                  />
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-[#F2F0EB] text-[#2D3A31] rounded-full border border-[#E6E2DA]">
-                    {m.aiCore}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-3 h-3 rounded-full inline-block"
+                      style={{ backgroundColor: m.avatarColor }}
+                    />
+                    <span className="text-[10px] font-bold px-2 py-0.5 bg-[#F2F0EB] text-[#2D3A31] rounded-full border border-[#E6E2DA]">
+                      {m.aiCore}
+                    </span>
+                  </div>
                 </div>
 
                 <div>
                   <h4 className="text-sm font-serif font-bold text-[#2D3A31]">{m.name}</h4>
-                  <p className="text-[11px] text-[#8C9A84] font-medium">{m.role}</p>
+                  <p className="text-[11px] text-[#8C9A84] font-semibold">{m.characterTitle || m.role}</p>
                 </div>
 
-                <p className="text-[11px] text-[#2D3A31]/75 italic leading-snug">
+                <p className="text-[10px] text-[#2D3A31]/70 leading-relaxed font-mono">
+                  {m.specialization}
+                </p>
+
+                <p className="text-[11px] text-[#2D3A31]/80 italic leading-snug pt-1 border-t border-[#E6E2DA]/60">
                   &ldquo;{m.motto}&rdquo;
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-[#E6E2DA] flex items-center justify-between text-[11px] text-[#2D3A31]/60">
+              <div className="pt-2 border-t border-[#E6E2DA] flex items-center justify-between text-[11px] text-[#2D3A31]/60 font-mono">
                 <span>Weight: <strong className="text-[#2D3A31]">{m.weight}%</strong></span>
                 <span className="text-[#8C9A84] font-semibold">{m.accuracyScore}% Acc</span>
               </div>
@@ -242,14 +255,14 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
         </div>
       </div>
 
-      {/* 4. Active Deliberation Debate & Consensus Canvas */}
+      {/* 4. Deliberation View Tabs & Canvas */}
       {activeDebate && (
-        <div className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-[36px] p-8 sm:p-10 shadow-sm space-y-8">
+        <div className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-[36px] p-6 sm:p-10 shadow-sm space-y-8">
           {/* Active Debate Header */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between pb-6 border-b border-[#E6E2DA] gap-4">
             <div className="space-y-1 max-w-2xl">
               <span className="text-[11px] font-semibold text-[#8C9A84] uppercase tracking-wider block">
-                Evaluated Proposal
+                Active Deliberation
               </span>
               <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#2D3A31] leading-snug">
                 {activeDebate.question}
@@ -259,7 +272,7 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <span className="text-[11px] text-[#8C9A84] font-semibold uppercase block">
-                  Consensus Agreement
+                  Consensus Alignment
                 </span>
                 <span className="text-3xl font-serif font-bold text-[#2D3A31]">
                   {activeDebate.consensusScore}%
@@ -270,10 +283,10 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
                 className={cn(
                   "px-4 py-2 rounded-2xl border text-xs font-bold uppercase tracking-wider",
                   activeDebate.finalVerdict === "APPROVED"
-                    ? "bg-[#8C9A84]/15 text-[#8C9A84] border-[#8C9A84]/30"
+                    ? "bg-emerald-100 text-emerald-800 border-emerald-300"
                     : activeDebate.finalVerdict === "CONDITIONAL"
-                    ? "bg-[#C27B66]/15 text-[#C27B66] border-[#C27B66]/30"
-                    : "bg-[#2D3A31]/15 text-[#2D3A31] border-[#2D3A31]/30"
+                    ? "bg-amber-100 text-amber-800 border-amber-300"
+                    : "bg-rose-100 text-rose-800 border-rose-300"
                 )}
               >
                 {activeDebate.finalVerdict}
@@ -281,51 +294,150 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
             </div>
           </div>
 
-          {/* 5 Member Individual Verdict Cards */}
-          <div className="space-y-3">
-            <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider block">
-              5-Member Individual Evaluations
-            </span>
+          {/* Sub-tab Navigation: Live Debate Transcript vs Individual Positions */}
+          <div className="flex bg-[#F2F0EB] border border-[#E6E2DA] rounded-full p-1 w-fit">
+            <button
+              onClick={() => setCouncilTab("DEBATE")}
+              className={cn(
+                "px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer",
+                councilTab === "DEBATE"
+                  ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                  : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
+              )}
+            >
+              Live Debate Transcript & Critiques
+            </button>
+            <button
+              onClick={() => setCouncilTab("VERDICTS")}
+              className={cn(
+                "px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer",
+                councilTab === "VERDICTS"
+                  ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                  : "text-[#2D3A31]/70 hover:text-[#2D3A31]"
+              )}
+            >
+              5 Member Detailed Directives
+            </button>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeDebate.verdicts.map((v) => (
-                <div
-                  key={v.memberId}
-                  className="bg-[#F9F8F4] border border-[#E6E2DA] rounded-[24px] p-5 flex flex-col justify-between space-y-3 shadow-sm"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-serif font-bold text-[#2D3A31]">
-                        {v.memberName}
-                      </span>
-                      <span
-                        className={cn(
-                          "px-2.5 py-0.5 rounded-full border text-[10px] font-semibold",
-                          getVerdictBadge(v.verdict)
-                        )}
-                      >
-                        {v.verdict}
-                      </span>
+          {/* Tab 1: Round-Robin Dialogue & Adversarial Critiques */}
+          {councilTab === "DEBATE" && (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider block">
+                Council Round-Robin Exchange
+              </span>
+
+              <div className="space-y-3">
+                {(activeDebate.dialogueTranscript || []).map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={cn(
+                      "p-4 sm:p-5 rounded-2xl border transition-all",
+                      msg.isCritique
+                        ? "bg-[#FFF9F6] border-[#F2D7CD]"
+                        : "bg-[#F9F8F4] border-[#E6E2DA]"
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-serif font-bold text-[#2D3A31]">
+                          {msg.speakerName}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E6E2DA] text-[#2D3A31] font-medium">
+                          {msg.speakerRole}
+                        </span>
+                      </div>
+                      {msg.isCritique && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold border border-rose-300">
+                          Adversarial Critique
+                        </span>
+                      )}
                     </div>
-
-                    <p className="text-xs text-[#2D3A31]/80 leading-relaxed">
-                      {v.argument}
+                    <p className="text-xs text-[#2D3A31]/90 leading-relaxed font-sans">
+                      {msg.text}
                     </p>
                   </div>
-
-                  <div className="pt-2.5 border-t border-[#E6E2DA] space-y-1">
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-[#8C9A84] font-medium">{v.keyMetric}</span>
-                      <span className="font-bold text-[#2D3A31]">{v.confidence}% Conf</span>
-                    </div>
-                    <span className="text-[10px] text-[#2D3A31]/60 block leading-tight">
-                      {v.aiEngineDetail}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Tab 2: 5 Member Individual Cards with Cross Critiques */}
+          {councilTab === "VERDICTS" && (
+            <div className="space-y-3 animate-in fade-in duration-200">
+              <span className="text-xs font-semibold text-[#8C9A84] uppercase tracking-wider block">
+                5-Member In-Depth Evaluations & Critiques
+              </span>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {activeDebate.verdicts.map((v) => (
+                  <div
+                    key={v.memberId}
+                    className="bg-[#F9F8F4] border border-[#E6E2DA] rounded-[24px] p-5 flex flex-col justify-between space-y-4 shadow-sm"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-serif font-bold text-[#2D3A31] block">
+                            {v.memberName}
+                          </span>
+                          <span className="text-[10px] text-[#8C9A84] font-semibold">
+                            {v.characterTitle || v.archetype}
+                          </span>
+                        </div>
+                        <span
+                          className={cn(
+                            "px-2.5 py-0.5 rounded-full border text-[10px] font-semibold",
+                            getVerdictBadge(v.verdict)
+                          )}
+                        >
+                          {v.verdict}
+                        </span>
+                      </div>
+
+                      {/* Argument */}
+                      <div className="text-xs text-[#2D3A31]/90 leading-relaxed bg-[#FFFFFF] p-3 rounded-xl border border-[#E6E2DA]">
+                        <MarkdownViewer content={v.argument} />
+                      </div>
+
+                      {/* Direct Critiques of Other Members */}
+                      {v.critiquesAgainstOthers && v.critiquesAgainstOthers.length > 0 && (
+                        <div className="bg-[#FFF9F6] border border-[#F2D7CD] rounded-xl p-3 space-y-1.5">
+                          <span className="text-[10px] font-bold text-[#C27B66] uppercase block">
+                            Critique on Other Council Members:
+                          </span>
+                          {v.critiquesAgainstOthers.map((c, cIdx) => (
+                            <div key={cIdx} className="text-[11px] text-[#2D3A31]/85">
+                              <span className="font-bold text-[#2D3A31]">vs. {c.targetMemberName} ({c.targetRole}): </span>
+                              <span>{c.critiqueText}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Recommended Remedy */}
+                      {v.remedyRecommendation && (
+                        <div className="text-[11px] text-emerald-900 bg-emerald-50/70 border border-emerald-200 rounded-xl p-2.5">
+                          <span className="font-bold block">Proposed Compromise / Remedy:</span>
+                          <span>{v.remedyRecommendation}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-2.5 border-t border-[#E6E2DA] space-y-1 font-mono">
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-[#8C9A84] font-medium">{v.keyMetric}</span>
+                        <span className="font-bold text-[#2D3A31]">{v.confidence}% Conf</span>
+                      </div>
+                      <span className="text-[10px] text-[#2D3A31]/60 block leading-tight">
+                        {v.aiEngineDetail}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Executive Synthesis Summary */}
           <div className="p-6 bg-[#F2F0EB] border border-[#E6E2DA] rounded-[28px] space-y-3">
@@ -333,9 +445,9 @@ export const CouncilView: React.FC<CouncilViewProps> = ({
               <CheckCircle2 className="w-4 h-4 text-[#8C9A84]" />
               <span>Executive Council Synthesis Directive</span>
             </div>
-            <p className="text-xs sm:text-sm text-[#2D3A31]/90 leading-relaxed">
-              {activeDebate.synthesisSummary}
-            </p>
+            <div className="text-xs sm:text-sm text-[#2D3A31]/90 leading-relaxed font-sans">
+              <MarkdownViewer content={activeDebate.synthesisSummary} />
+            </div>
           </div>
         </div>
       )}

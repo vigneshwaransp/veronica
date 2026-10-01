@@ -14,7 +14,7 @@ import {
   AICouncilIntervention
 } from "@/types/veronica";
 import { veronicaStore } from "@/lib/veronica-store";
-import { MarkdownRenderer } from "@/components/veronica/ui/MarkdownRenderer";
+import { MarkdownViewer } from "@/components/veronica/ui/MarkdownViewer";
 import { speakFemaleVoice, stopSpeaking } from "@/lib/voice-speech";
 import { cn } from "@/lib/utils";
 import {
@@ -1230,7 +1230,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   {isUser ? (
                     <p className="whitespace-pre-wrap">{msg.text}</p>
                   ) : (
-                    <MarkdownRenderer content={msg.text} />
+                    <MarkdownViewer content={msg.text} />
                   )}
                 </div>
 

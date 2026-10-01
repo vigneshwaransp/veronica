@@ -508,12 +508,14 @@ export const INITIAL_AUDIT_EVENTS: AuditEvent[] = [
 
 export const INITIAL_COUNCIL_MEMBERS: CouncilMember[] = [
   {
-    id: "council_rationalist",
-    name: "The Rationalist",
-    title: "Speed-RAG & First-Principles Core",
+    id: "council_scientist",
+    name: "Dr. Aurelia Vance",
+    characterTitle: "AI Research Scientist",
+    title: "PhD in Statistical ML & Speed-RAG Core",
     archetype: "LOGIC_RAG",
-    role: "Memory Grounding & Logical Verification",
-    motto: "Ground all propositions in verified episodic & semantic vector traces with sub-ms recall.",
+    role: "Theoretical AI & Empirical Grounding",
+    specialization: "Bayesian Priors, Vector Semantic Bounds, Statistical Convergence",
+    motto: "Ground every claim in empirical vector distributions and mathematical invariants.",
     avatarColor: "#8C9A84",
     aiCore: "SPEED_RAG",
     aiCoreDescription: "Sub-millisecond hybrid vector retrieval (HNSW dense + BM25 sparse) with cosine similarity ranking.",
@@ -521,38 +523,29 @@ export const INITIAL_COUNCIL_MEMBERS: CouncilMember[] = [
     accuracyScore: 98,
   },
   {
-    id: "council_adversary",
-    name: "The Adversary",
-    title: "GAN Discriminator & Perturbation Tester",
+    id: "council_infra_eng",
+    name: "Marcus Stone",
+    characterTitle: "Systems & Infrastructure Engineer",
+    title: "Lead Distributed Architect & GAN Stress-Tester",
     archetype: "GAN_ADVERSARIAL",
-    role: "Adversarial Stress-Testing & Edge Cases",
-    motto: "Probe vulnerabilities and adversarial perturbations to prevent cognitive overfitting.",
+    role: "Distributed Scalability & Fault Tolerance",
+    specialization: "P99 Latency Budgets, Race Conditions, Failovers, Concurrency Gates",
+    motto: "If an architecture cannot withstand a 10x network partition or memory leak, it is broken.",
     avatarColor: "#C27B66",
     aiCore: "GAN",
     aiCoreDescription: "Minimax Wasserstein GAN Discriminator evaluating decision distribution robustness against edge cases.",
-    weight: 92,
-    accuracyScore: 94,
+    weight: 94,
+    accuracyScore: 95,
   },
   {
-    id: "council_temporal",
-    name: "The Temporal Synthesizer",
-    title: "RNN State Machine & Trajectory Predictor",
-    archetype: "RNN_TEMPORAL",
-    role: "Sequential Behavior & Habit Trajectory",
-    motto: "Sequential decisions form a continuous recurrent manifold of long-term momentum.",
-    avatarColor: "#7C8B74",
-    aiCore: "RNN",
-    aiCoreDescription: "Multi-layer GRU/LSTM recurrent hidden state modeling with 14-day temporal lookahead.",
-    weight: 90,
-    accuracyScore: 92,
-  },
-  {
-    id: "council_guardian",
-    name: "The Value Guardian",
-    title: "RLHF Reward Model & Sovereignty Gate",
+    id: "council_security",
+    name: "Kaelen Voss",
+    characterTitle: "Security Architect & Tech Specialist",
+    title: "Principal Security Architect & Sovereignty Gate",
     archetype: "RLHF_ALIGNMENT",
-    role: "Constitutional Safety & Human Feedback",
-    motto: "Protect user sovereignty, ethical alignment, and constitutional priors.",
+    role: "Zero-Trust Security & Data Isolation",
+    specialization: "Cryptographic Attestation, Token Isolation, Privilege Boundaries",
+    motto: "Zero trust, absolute data sovereignty, and zero leakage to unverified third parties.",
     avatarColor: "#5A6B5C",
     aiCore: "RLHF",
     aiCoreDescription: "PPO Policy Optimization with KL-divergence regularization on human feedback rewards.",
@@ -560,17 +553,34 @@ export const INITIAL_COUNCIL_MEMBERS: CouncilMember[] = [
     accuracyScore: 99,
   },
   {
-    id: "council_executor",
-    name: "The Pragmatic Executor",
-    title: "Consensus Arbiter & Autonomous Pipeline",
+    id: "council_optimizer",
+    name: "Elena Rostova",
+    characterTitle: "Optimization & Performance Specialist",
+    title: "High-Performance Systems & Temporal Predictor",
+    archetype: "RNN_TEMPORAL",
+    role: "Algorithmic Efficiency & Resource Pruning",
+    specialization: "Cache Hit Ratios, Memory Footprint, Token Budgeting, Zero GC Thrashing",
+    motto: "Efficiency is beauty: prune redundant tokens, eliminate locks, and compress execution.",
+    avatarColor: "#7C8B74",
+    aiCore: "RNN",
+    aiCoreDescription: "Multi-layer GRU/LSTM recurrent hidden state modeling with 14-day temporal lookahead.",
+    weight: 92,
+    accuracyScore: 96,
+  },
+  {
+    id: "council_product",
+    name: "Daphne Brooks",
+    characterTitle: "Product & UX Strategist",
+    title: "Executive Synthesis & Developer Experience Lead",
     archetype: "EXECUTIVE_SYNTHESIS",
-    role: "Harmonization & Decisive Action",
-    motto: "Synthesize disparate council viewpoints into an actionable, high-leverage pipeline.",
+    role: "Developer Ergonomics & Pragmatic Delivery",
+    specialization: "Frictionless DX, Fast Ship Velocity, Practical ROI, User Cognitive Load",
+    motto: "A theoretically perfect system is useless if developers fight it every day.",
     avatarColor: "#2D3A31",
     aiCore: "SYNTHESIZER",
     aiCoreDescription: "Bayesian weighted consensus engine & DAG execution pipeline dispatcher.",
     weight: 95,
-    accuracyScore: 96,
+    accuracyScore: 97,
   },
 ];
 
@@ -582,59 +592,133 @@ export const INITIAL_COUNCIL_DEBATES: CouncilDebateResult[] = [
     timestamp: "2026-08-31T20:30:00Z",
     consensusScore: 92,
     finalVerdict: "APPROVED",
-    synthesisSummary: "The Council overwhelmingly endorses migration to Next.js App Router. Speed-RAG verified memory of zero split-brain architectures, GAN stress testing passed streaming hydration edge cases, and RLHF reward alignment scored +0.94.",
+    synthesisSummary: "The Council approves migration to Next.js App Router. Dr. Vance verified Speed-RAG memory alignment, Marcus Stone established WebGL client boundaries to prevent SSR panics, Kaelen Voss validated zero-leakage token streaming, and Elena Rostova optimized bundle chunks.",
     speedRagRetrievalTimeMs: 0.84,
     ganDiscriminatorScore: 0.91,
     rnnTemporalPredictability: 94.2,
     rlhfRewardAlignment: 96.0,
+    dialogueTranscript: [
+      {
+        speakerName: "Dr. Aurelia Vance",
+        speakerRole: "AI Research Scientist",
+        text: "From an empirical RAG and memory perspective, App Router's React Server Components provide deterministic streaming boundaries that reduce client hydration overhead by 42%."
+      },
+      {
+        speakerName: "Marcus Stone",
+        speakerRole: "Systems & Infrastructure Engineer",
+        text: "I agree with Dr. Vance in theory, but I must critique her assumption: Three.js WebGL canvas will crash on SSR if not strictly quarantined inside 'use client' boundaries. We need a dual-tier lifecycle.",
+        isCritique: true
+      },
+      {
+        speakerName: "Kaelen Voss",
+        speakerRole: "Security Architect & Tech Specialist",
+        text: "Marcus is right about boundary enforcement. Additionally, Server Actions must be protected with HMAC signature verification to prevent spoofed agent dispatches."
+      },
+      {
+        speakerName: "Elena Rostova",
+        speakerRole: "Optimization & Performance Specialist",
+        text: "I critique Daphne's initial proposal of heavy third-party UI libraries. We should maintain clean Tailwind and native WebGL shaders to maintain 60 FPS and sub-1ms paint times.",
+        isCritique: true
+      },
+      {
+        speakerName: "Daphne Brooks",
+        speakerRole: "Product & UX Strategist",
+        text: "Accepted. We proceed with Next.js App Router, isolate WebGL into designated client canisters, and leverage Streaming Suspense for AI chat tokens."
+      }
+    ],
     verdicts: [
       {
-        memberId: "council_rationalist",
-        memberName: "The Rationalist",
+        memberId: "council_scientist",
+        memberName: "Dr. Aurelia Vance",
+        characterTitle: "AI Research Scientist",
         archetype: "LOGIC_RAG",
         confidence: 96,
         verdict: "ENDORSE",
-        argument: "Speed RAG retrieved 4 memory traces confirming user preference for React Server Components and nested streaming layouts.",
+        argument: "Speed-RAG vector recall confirms strong alignment with React Server Components for token streaming and server-side state isolation.",
+        critiquesAgainstOthers: [
+          {
+            targetMemberName: "Daphne Brooks",
+            targetRole: "Product Strategist",
+            critiqueText: "Warns against prioritizing fast UI animations over mathematical consistency and deterministic state hydration."
+          }
+        ],
+        remedyRecommendation: "Enforce strict compile-time TypeScript invariants on all Server Action payloads.",
         keyMetric: "0.84ms Speed RAG Recall",
         aiEngineDetail: "HNSW index matched mem_001 & mem_006 with cosine score 0.93."
       },
       {
-        memberId: "council_adversary",
-        memberName: "The Adversary",
+        memberId: "council_infra_eng",
+        memberName: "Marcus Stone",
+        characterTitle: "Systems & Infrastructure Engineer",
         archetype: "GAN_ADVERSARIAL",
         confidence: 88,
         verdict: "SCRUTINIZE",
-        argument: "Adversarial simulation detected potential hydration mismatch if Three.js WebGL canvas is rendered in SSR without client boundaries.",
+        argument: "Adversarial stress-testing warns that WebGL Three.js context will panic during server-side pre-rendering unless enclosed in dedicated client-side wrappers.",
+        critiquesAgainstOthers: [
+          {
+            targetMemberName: "Dr. Aurelia Vance",
+            targetRole: "AI Research Scientist",
+            critiqueText: "Points out that theoretical RSC benefits collapse if client re-renders trigger expensive WebGL context rebuilds."
+          }
+        ],
+        remedyRecommendation: "Quarantine Three.js canvas in dynamic no-SSR imports with fallback skeleton loaders.",
         keyMetric: "0.14 Wasserstein Loss",
         aiEngineDetail: "Enforce strict 'use client' isolation for Three.js shaders."
       },
       {
-        memberId: "council_temporal",
-        memberName: "The Temporal Synthesizer",
-        archetype: "RNN_TEMPORAL",
-        confidence: 94,
-        verdict: "ENDORSE",
-        argument: "RNN sequence analysis indicates 94.2% historical momentum towards modern React 19 / Next.js standards over the past 6 months.",
-        keyMetric: "94.2% Sequence Fit",
-        aiEngineDetail: "Hidden state h_t exhibits strong positive derivative towards App Router."
-      },
-      {
-        memberId: "council_guardian",
-        memberName: "The Value Guardian",
+        memberId: "council_security",
+        memberName: "Kaelen Voss",
+        characterTitle: "Security Architect & Tech Specialist",
         archetype: "RLHF_ALIGNMENT",
         confidence: 98,
         verdict: "ALIGN",
-        argument: "Aligned with core sovereign principles: Zero proprietary vendor lock-in, FOSS compliance, and deterministic types.",
+        argument: "App Router's server environment strictly guarantees that private API keys and MCP credentials are never exposed in client bundles.",
+        critiquesAgainstOthers: [
+          {
+            targetMemberName: "Marcus Stone",
+            targetRole: "Systems Engineer",
+            critiqueText: "Demands that all WebSocket and streaming worker endpoints validate cryptographic JWT tokens on every chunk."
+          }
+        ],
+        remedyRecommendation: "Keep all environment keys on the server and use ephemeral tokens for Live API clients.",
         keyMetric: "+0.96 RLHF Reward",
         aiEngineDetail: "KL divergence delta < 0.01 relative to human baseline."
       },
       {
-        memberId: "council_executor",
-        memberName: "The Pragmatic Executor",
+        memberId: "council_optimizer",
+        memberName: "Elena Rostova",
+        characterTitle: "Optimization & Performance Specialist",
+        archetype: "RNN_TEMPORAL",
+        confidence: 94,
+        verdict: "ENDORSE",
+        argument: "Sequence trajectory indicates 94.2% historical momentum towards Server Components, cutting initial client bundle size by 180KB.",
+        critiquesAgainstOthers: [
+          {
+            targetMemberName: "Daphne Brooks",
+            targetRole: "Product Strategist",
+            critiqueText: "Critiques excessive client-side state libraries; advocates React 19 native action transitions."
+          }
+        ],
+        remedyRecommendation: "Stream AI responses through ReadableStream with chunk buffering to prevent UI frame drops.",
+        keyMetric: "94.2% Sequence Fit",
+        aiEngineDetail: "Hidden state h_t exhibits strong positive derivative towards App Router."
+      },
+      {
+        memberId: "council_product",
+        memberName: "Daphne Brooks",
+        characterTitle: "Product & UX Strategist",
         archetype: "EXECUTIVE_SYNTHESIS",
         confidence: 95,
         verdict: "SYNTHESIZE",
-        argument: "Proceed with App Router. Isolate WebGL into client components, leverage streaming Suspense for AI chat tokens.",
+        argument: "Synthesizing all member directives: Adopt App Router with client-quarantined WebGL, streaming Suspense for chat, and zero third-party bloated libraries.",
+        critiquesAgainstOthers: [
+          {
+            targetMemberName: "Marcus Stone",
+            targetRole: "Systems Engineer",
+            critiqueText: "Acknowledges the WebGL warning but insists on maintaining smooth 60fps transitions without jarring layout shifts."
+          }
+        ],
+        remedyRecommendation: "Deploy immediately with automated Lighthouse Core Web Vitals gate in CI/CD.",
         keyMetric: "92% Weighted Consensus",
         aiEngineDetail: "Autonomous DAG pipeline ready for Step 1 execution."
       }
@@ -1150,59 +1234,95 @@ class VeronicaStateStore {
     const isTech = /rust|wasm|postgres|mongo|sql|db|type|ts|python|docker|k8s|api|microservice/i.test(qClean);
     const isAuto = /autonom|agent|background|worker|cron|webhook|pr|git/i.test(qClean);
 
-    // 1. Rationalist Verdict (Speed RAG)
+    // 1. Dr. Aurelia Vance (AI Research Scientist)
     const ratVerdict: CouncilMemberVerdict = {
-      memberId: "council_rationalist",
-      memberName: "The Rationalist",
+      memberId: "council_scientist",
+      memberName: "Dr. Aurelia Vance",
+      characterTitle: "AI Research Scientist",
       archetype: "LOGIC_RAG",
       confidence: Math.round(92 + Math.random() * 7),
       verdict: "ENDORSE",
       argument: isTech
         ? `Speed-RAG empirical benchmarks indicate superior performance when enforcing strict memory bounds and compile-time type invariants for "${qClean.slice(0, 40)}".`
-        : `Empirical priors confirm that "${qClean.slice(0, 40)}" reduces entropy and maximizes deterministic task throughput.`,
+        : `Empirical vector priors confirm that "${qClean.slice(0, 40)}" reduces entropy and maximizes deterministic task throughput.`,
+      critiquesAgainstOthers: [
+        {
+          targetMemberName: "Daphne Brooks",
+          targetRole: "Product Strategist",
+          critiqueText: `Critiques Daphne's tendency to compromise mathematical correctness for faster MVP iterations.`
+        }
+      ],
+      remedyRecommendation: `Enforce formal verification on core algorithm inputs with ${speedRagLatency}ms HNSW recall.`,
       keyMetric: `${speedRagLatency}ms Speed-RAG Recall`,
       aiEngineDetail: `HNSW vector similarity: 0.94 cosine score against ${this.memories.length} indexed memory chunks.`
     };
 
-    // 2. Adversary Verdict (GAN Discriminator)
+    // 2. Marcus Stone (Systems & Infrastructure Engineer)
     const advVerdict: CouncilMemberVerdict = {
-      memberId: "council_adversary",
-      memberName: "The Adversary",
+      memberId: "council_infra_eng",
+      memberName: "Marcus Stone",
+      characterTitle: "Systems & Infrastructure Engineer",
       archetype: "GAN_ADVERSARIAL",
       confidence: Math.round(76 + Math.random() * 12),
       verdict: isAuto ? "SCRUTINIZE" : "ADAPT",
       argument: isAuto
         ? `Adversarial stress-testing warns that unchecked autonomous actions risk split-brain race conditions. We must mandate rollback checkpoints and telemetry tripwires.`
         : `Wasserstein GAN perturbation testing revealed edge-case vulnerabilities during high-concurrency spikes. Strict timeout boundaries must be enforced.`,
+      critiquesAgainstOthers: [
+        {
+          targetMemberName: "Dr. Aurelia Vance",
+          targetRole: "AI Research Scientist",
+          critiqueText: `Challenges Dr. Vance's assumption that clean vector embeddings prevent distributed network partition latency.`
+        }
+      ],
+      remedyRecommendation: `Implement circuit breakers, health-check tripwires, and automated container rollback handlers.`,
       keyMetric: `D(x) = ${ganScore} Discriminator Score`,
       aiEngineDetail: `Generative generator synthesized 8 adversarial boundary variations.`
     };
 
-    // 3. Temporal Synthesizer (RNN)
+    // 3. Elena Rostova (Optimization & Performance Specialist)
     const tempVerdict: CouncilMemberVerdict = {
-      memberId: "council_temporal",
-      memberName: "The Temporal Synthesizer",
+      memberId: "council_optimizer",
+      memberName: "Elena Rostova",
+      characterTitle: "Optimization & Performance Specialist",
       archetype: "RNN_TEMPORAL",
       confidence: Math.round(86 + Math.random() * 9),
       verdict: "ENDORSE",
       argument: `RNN recurrent sequence modeling indicates an 18-month upward trajectory with high ecosystem compatibility and negligible compounding technical debt for "${qClean.slice(0, 35)}".`,
+      critiquesAgainstOthers: [
+        {
+          targetMemberName: "Marcus Stone",
+          targetRole: "Systems Engineer",
+          critiqueText: `Critiques Marcus's proposal of redundant heavy proxy layers which would add 12ms of unnecessary P99 latency.`
+        }
+      ],
+      remedyRecommendation: `Stream chunks directly through zero-copy buffers and maintain tight token budgets.`,
       keyMetric: `${rnnPredictability}% Recurrent Fit`,
       aiEngineDetail: `GRU temporal state h_t confirms positive momentum with persona '${this.getActivePersona().name}'.`
     };
 
-    // 4. Value Guardian (RLHF)
+    // 4. Kaelen Voss (Security Architect & Tech Specialist)
     const guardVerdict: CouncilMemberVerdict = {
-      memberId: "council_guardian",
-      memberName: "The Value Guardian",
+      memberId: "council_security",
+      memberName: "Kaelen Voss",
+      characterTitle: "Security Architect & Tech Specialist",
       archetype: "RLHF_ALIGNMENT",
       confidence: Math.round(94 + Math.random() * 5),
       verdict: "ALIGN",
       argument: `Constitutional safety boundaries verified. User data sovereignty and privacy guarantees are strictly preserved with zero third-party leakage.`,
+      critiquesAgainstOthers: [
+        {
+          targetMemberName: "Daphne Brooks",
+          targetRole: "Product Strategist",
+          critiqueText: `Rejects any proposed shortcuts that bypass cryptographic JWT token validation or telemetry encryption.`
+        }
+      ],
+      remedyRecommendation: `Quarantine all external API dispatches with HMAC signature verification and ephemeral tokens.`,
       keyMetric: `+${rlhfReward}% RLHF Alignment`,
       aiEngineDetail: `PPO KL divergence penalty bounded at delta < 0.01.`
     };
 
-    // 5. Pragmatic Executor (Consensus Synthesizer)
+    // 5. Daphne Brooks (Product & UX Strategist)
     const weightedScore = Math.round(
       (ratVerdict.confidence * 96 +
         advVerdict.confidence * 92 +
@@ -1212,15 +1332,54 @@ class VeronicaStateStore {
     );
 
     const execVerdict: CouncilMemberVerdict = {
-      memberId: "council_executor",
-      memberName: "The Pragmatic Executor",
+      memberId: "council_product",
+      memberName: "Daphne Brooks",
+      characterTitle: "Product & UX Strategist",
       archetype: "EXECUTIVE_SYNTHESIS",
       confidence: weightedScore,
       verdict: "SYNTHESIZE",
-      argument: `Synthesizing Rationalist speed with Adversary safeguards: Proceed with phased rollout under Level 3 autonomy with automated telemetry verification.`,
+      argument: `Synthesizing all perspectives: Ship "${qClean.slice(0, 45)}" with Dr. Vance's vector grounding, Marcus's circuit breakers, Kaelen's zero-trust quarantine, and Elena's streaming buffers.`,
+      critiquesAgainstOthers: [
+        {
+          targetMemberName: "Elena Rostova",
+          targetRole: "Optimization Specialist",
+          critiqueText: `Warns Elena not to prematurely optimize low-level byte buffers before developer ergonomics are validated.`
+        }
+      ],
+      remedyRecommendation: `Execute phased rollout with live telemetry monitoring and 1-click administrative override.`,
       keyMetric: `${weightedScore}% Weighted Consensus`,
       aiEngineDetail: `Multi-agent arbitration resolved all tension points with autonomous confirmation.`
     };
+
+    const dialogueTranscript = [
+      {
+        speakerName: "Dr. Aurelia Vance",
+        speakerRole: "AI Research Scientist",
+        text: `Based on empirical vector memory analysis, "${qClean}" exhibits strong theoretical grounding and high mathematical consistency.`
+      },
+      {
+        speakerName: "Marcus Stone",
+        speakerRole: "Systems & Infrastructure Engineer",
+        text: `I must challenge Dr. Vance on the operational resilience: how does this architecture handle high concurrency spikes and network degradation? We must embed circuit breakers.`,
+        isCritique: true
+      },
+      {
+        speakerName: "Kaelen Voss",
+        speakerRole: "Security Architect & Tech Specialist",
+        text: `From a security stance, user data sovereignty is non-negotiable. All tool executions and data streams must remain cryptographically verifiable and isolated.`
+      },
+      {
+        speakerName: "Elena Rostova",
+        speakerRole: "Optimization & Performance Specialist",
+        text: `I critique adding overly complex defensive layers that penalize P99 latency. We should enforce lean byte buffers and stream responses to maintain sub-millisecond execution.`,
+        isCritique: true
+      },
+      {
+        speakerName: "Daphne Brooks",
+        speakerRole: "Product & UX Strategist",
+        text: `Consensus synthesized: We endorse the initiative with Marcus's circuit breakers, Kaelen's zero-trust safeguards, and Elena's streaming performance.`
+      }
+    ];
 
     const newDebate: CouncilDebateResult = {
       id: `deb_${Date.now()}`,
@@ -1229,11 +1388,12 @@ class VeronicaStateStore {
       timestamp: new Date().toISOString(),
       consensusScore: weightedScore,
       finalVerdict: weightedScore >= 80 ? "APPROVED" : weightedScore >= 60 ? "CONDITIONAL" : "REJECTED",
-      synthesisSummary: `The Council evaluated '${qClean.slice(0, 60)}...' across Speed-RAG, GAN stress-testing, RNN sequence trajectory, and RLHF reward alignment. Final consensus: ${weightedScore}% approval with actionable directives.`,
+      synthesisSummary: `The 5 Council Characters evaluated '${qClean.slice(0, 60)}...' across Empirical AI, Distributed Systems, Security Architecture, Performance Optimization, and Product Ergonomics. Final consensus: ${weightedScore}% approval with actionable cross-discipline directives.`,
       speedRagRetrievalTimeMs: speedRagLatency,
       ganDiscriminatorScore: ganScore,
       rnnTemporalPredictability: +rnnPredictability,
       rlhfRewardAlignment: +rlhfReward,
+      dialogueTranscript,
       verdicts: [ratVerdict, advVerdict, tempVerdict, guardVerdict, execVerdict],
     };
 
