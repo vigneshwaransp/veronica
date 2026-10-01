@@ -275,10 +275,18 @@ export function MCPHubView({ onNavigateView }: MCPHubViewProps) {
                 {filteredServers.map((server) => {
                   const isSelected = server.id === selectedServerId;
                   return (
-                    <button
+                    <div
                       key={server.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setSelectedServerId(server.id)}
-                      className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between ${
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedServerId(server.id);
+                        }
+                      }}
+                      className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
                           ? "bg-[#F2F0EB] border-[#8C9A84] shadow-sm"
                           : "bg-[#F9F8F4]/60 border-[#E6E2DA] hover:bg-[#F9F8F4]"
@@ -315,7 +323,7 @@ export function MCPHubView({ onNavigateView }: MCPHubViewProps) {
                             handlePingServer(server.id);
                           }}
                           disabled={pingingServerId === server.id}
-                          className="p-1.5 hover:bg-[#FFFFFF] rounded-lg text-[#8C9A84] hover:text-[#2D3A31] transition-all"
+                          className="p-1.5 hover:bg-[#FFFFFF] rounded-lg text-[#8C9A84] hover:text-[#2D3A31] transition-all cursor-pointer"
                           title="Ping MCP Server"
                         >
                           <RefreshCw
@@ -323,7 +331,7 @@ export function MCPHubView({ onNavigateView }: MCPHubViewProps) {
                           />
                         </button>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
