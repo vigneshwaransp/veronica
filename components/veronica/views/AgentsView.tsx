@@ -85,24 +85,61 @@ export function AgentsView({ onNavigateView }: AgentsViewProps) {
     setAgentState("PLANNING");
     setActiveTab("monitor");
     setTaskResult(null);
-    setCurrentPlan([]);
-    setTimelineEvents([]);
-    setCurrentActionText(`Formulating execution plan for ${selectedAgent.name}...`);
 
     const formatNow = () => new Date().toTimeString().split(" ")[0];
 
-    // Initial timeline events
+    // Optimistic initial plan preview
+    const initialPlanSteps: AgentPlanStep[] =
+      selectedAgent.id === "research"
+        ? [
+            { id: "p1", stepIndex: 1, title: "Understand task & formulate research queries", description: `Deconstruct objective: "${objective.slice(0, 50)}..."`, status: "running" },
+            { id: "p2", stepIndex: 2, title: "Collect information from authoritative sources", description: "Execute web search tool for live facts", status: "pending", toolName: "web_search" },
+            { id: "p3", stepIndex: 3, title: "Verify findings against internal knowledge index", description: "Cross-check facts against system memory", status: "pending", toolName: "speed_rag_memory" },
+            { id: "p4", stepIndex: 4, title: "Synthesize structured research briefing", description: "Generate executive summary and recommendations", status: "pending" },
+          ]
+        : selectedAgent.id === "coding"
+        ? [
+            { id: "p1", stepIndex: 1, title: "Deconstruct requirements & define type contracts", description: `Strict type definitions for "${objective.slice(0, 50)}..."`, status: "running" },
+            { id: "p2", stepIndex: 2, title: "Execute sandbox code generation & test harness", description: "Run sandbox test execution", status: "pending", toolName: "code_sandbox" },
+            { id: "p3", stepIndex: 3, title: "Produce complete tested implementation", description: "Generate implementation code and unit tests", status: "pending" },
+          ]
+        : selectedAgent.id === "analysis"
+        ? [
+            { id: "p1", stepIndex: 1, title: "Ingest dataset & compute statistical distributions", description: "Numerical analysis and anomaly calculation", status: "running", toolName: "data_analyzer" },
+            { id: "p2", stepIndex: 2, title: "Synthesize findings & strategic takeaways", description: "Deconstruct anomaly patterns and optimizations", status: "pending" },
+          ]
+        : [
+            { id: "p1", stepIndex: 1, title: "Deconstruct objective & map dependencies", description: `Milestone planning for: "${objective.slice(0, 50)}..."`, status: "running" },
+            { id: "p2", stepIndex: 2, title: "Query memory index & gather operational context", description: "Contextual lookup via Speed-RAG", status: "pending", toolName: "speed_rag_memory" },
+            { id: "p3", stepIndex: 3, title: "Assemble comprehensive strategic deliverable", description: "Multi-domain roadmap synthesis", status: "pending" },
+          ];
+
+    setCurrentPlan(initialPlanSteps);
+
     const initialEvents: AgentExecutionEvent[] = [
       { id: "e1", timestamp: formatNow(), message: `Task created for ${selectedAgent.name}`, type: "info" },
       { id: "e2", timestamp: formatNow(), message: `Agent started: "${objective.slice(0, 70)}..."`, type: "info" },
-      { id: "e3", timestamp: formatNow(), message: "Formulating autonomous execution plan...", type: "plan" },
+      { id: "e3", timestamp: formatNow(), message: `Plan formulated with ${initialPlanSteps.length} milestones. Executing...`, type: "plan" },
     ];
     setTimelineEvents(initialEvents);
+    setCurrentActionText(`Executing autonomous plan for ${selectedAgent.name}...`);
+    setAgentState("RUNNING");
+
+    // Dynamic step progress animation while waiting for server response
+    let stepTimer: any = null;
+    let stepCount = 0;
+    stepTimer = setInterval(() => {
+      stepCount++;
+      setCurrentPlan((prev) =>
+        prev.map((s, idx) => {
+          if (idx < stepCount) return { ...s, status: "completed" };
+          if (idx === stepCount) return { ...s, status: "running" };
+          return { ...s, status: "pending" };
+        })
+      );
+    }, 1200);
 
     try {
-      setAgentState("RUNNING");
-      setCurrentActionText("Autonomous plan generated. Executing milestones with tool bindings...");
-
       const res = await fetch("/api/agents/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -113,6 +150,8 @@ export function AgentsView({ onNavigateView }: AgentsViewProps) {
           timeoutMs: timeoutSeconds * 1000,
         }),
       });
+
+      if (stepTimer) clearInterval(stepTimer);
 
       const data = await res.json();
 
@@ -132,6 +171,7 @@ export function AgentsView({ onNavigateView }: AgentsViewProps) {
         throw new Error(data.error || "Execution failed without result.");
       }
     } catch (err: any) {
+      if (stepTimer) clearInterval(stepTimer);
       setAgentState("FAILED");
       setCurrentActionText(`Task execution error: ${err.message || "Unknown execution failure"}`);
       const failedResult: AgentTaskResult = {

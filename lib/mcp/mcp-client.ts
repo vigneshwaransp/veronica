@@ -92,7 +92,10 @@ export class McpClientManager {
       };
     }
 
-    const tool = server.tools.find((t) => t.name === toolName);
+    const tool =
+      server.tools.find((t) => t.name === toolName) ||
+      server.tools.find((t) => t.name === `speed_${toolName}`) ||
+      server.tools.find((t) => t.name.replace("speed_", "") === toolName);
     if (!tool) {
       const latencyMs = Date.now() - startTime;
       const errorResponse: McpJsonRpcResponse = {
