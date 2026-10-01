@@ -264,97 +264,92 @@ export function AgentsView({ onNavigateView }: AgentsViewProps) {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-16 font-sans text-[#2D3A31]">
-      {/* Top Header Card */}
-      <div className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#8C9A84]/15 via-transparent to-transparent pointer-events-none rounded-full blur-3xl -mr-20 -mt-20" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-semibold text-[#2D3A31]">
-              <Bot className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>VERONICA AGENTS</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] text-emerald-700 font-mono">Autonomous Execution Loop</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2D3A31]">
-              Autonomous AI Workers
-            </h1>
-            <p className="text-sm text-[#2D3A31]/70 max-w-2xl">
-              Specialized autonomous agents that understand your objective, formulate multi-step execution plans, execute tools, verify results, and retry on errors without manual micro-management.
-            </p>
+      {/* 1. Header & Global Retrain Bar */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between border-b border-[#E6E2DA] pb-6 gap-6">
+        <div className="space-y-1.5 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-semibold text-[#8C9A84]">
+            <Bot className="w-3.5 h-3.5 text-[#8C9A84]" />
+            <span>Veronica Agents • 4 Autonomous Specialized Workers</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl">
-              <Bot className="w-4 h-4 text-[#8C9A84]" />
-              <div className="text-left">
-                <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase">Available Agents</div>
-                <div className="text-xs font-bold text-[#2D3A31]">{agents.length} Specialized Workers</div>
-              </div>
-            </div>
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#2D3A31]">
+            Veronica <span className="font-cursive text-4xl sm:text-5xl text-[#8C9A84]">Autonomous</span> Agents
+          </h2>
+          <p className="text-xs sm:text-sm text-[#2D3A31]/75 leading-relaxed">
+            Specialized autonomous AI workers that understand your objective, formulate multi-step execution plans, execute tools, verify results, and retry on errors without manual micro-management.
+          </p>
+        </div>
 
-            <div className="flex items-center gap-2 px-4 py-2 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl">
-              <History className="w-4 h-4 text-[#8C9A84]" />
-              <div className="text-left">
-                <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase">Executed Tasks</div>
-                <div className="text-xs font-bold text-[#2D3A31]">{taskHistory.length} History Logs</div>
-              </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl shadow-xs">
+            <Bot className="w-4 h-4 text-[#8C9A84]" />
+            <div className="text-left">
+              <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase font-mono">Available Agents</div>
+              <div className="text-xs font-bold text-[#2D3A31]">{agents.length} Specialized Workers</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl shadow-xs">
+            <History className="w-4 h-4 text-[#8C9A84]" />
+            <div className="text-left">
+              <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase font-mono">Executed Tasks</div>
+              <div className="text-xs font-bold text-[#2D3A31]">{taskHistory.length} History Logs</div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Sub Navigation Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-6 border-t border-[#E6E2DA]">
-          <div className="flex items-center gap-1.5 bg-[#F9F8F4] p-1 rounded-2xl border border-[#E6E2DA]">
-            <button
-              onClick={() => setActiveTab("directory")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === "directory"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>Agent Directory</span>
-            </button>
+      {/* Sub Navigation Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 py-2">
+        <div className="flex items-center gap-1.5 bg-[#F9F8F4] p-1 rounded-2xl border border-[#E6E2DA]">
+          <button
+            onClick={() => setActiveTab("directory")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              activeTab === "directory"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Agent Directory</span>
+          </button>
 
-            <button
-              onClick={() => setActiveTab("monitor")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === "monitor"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <Activity className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>Task Execution &amp; Monitor</span>
-              {agentState === "RUNNING" && (
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              )}
-            </button>
+          <button
+            onClick={() => setActiveTab("monitor")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              activeTab === "monitor"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Task Execution &amp; Monitor</span>
+            {agentState === "RUNNING" && (
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            )}
+          </button>
 
-            <button
-              onClick={() => setActiveTab("history")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                activeTab === "history"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <History className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>Execution History ({taskHistory.length})</span>
-            </button>
-          </div>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              activeTab === "history"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <History className="w-3.5 h-3.5" />
+            <span>Execution History ({taskHistory.length})</span>
+          </button>
+        </div>
 
-          <div className="flex items-center gap-3 text-xs text-[#2D3A31]/70">
-            <span className="font-semibold">Safety Limits:</span>
-            <span className="font-mono bg-[#F9F8F4] px-2 py-0.5 rounded-md border border-[#E6E2DA]">
-              Max Retries: {maxRetries}
-            </span>
-            <span className="font-mono bg-[#F9F8F4] px-2 py-0.5 rounded-md border border-[#E6E2DA]">
-              Timeout: {timeoutSeconds}s
-            </span>
-          </div>
+        <div className="flex items-center gap-3 text-xs text-[#2D3A31]/70">
+          <span className="font-semibold">Safety Limits:</span>
+          <span className="font-mono bg-[#FFFFFF] px-2.5 py-1 rounded-full border border-[#E6E2DA] shadow-xs">
+            Max Retries: {maxRetries}
+          </span>
+          <span className="font-mono bg-[#FFFFFF] px-2.5 py-1 rounded-full border border-[#E6E2DA] shadow-xs">
+            Timeout: {timeoutSeconds}s
+          </span>
         </div>
       </div>
 

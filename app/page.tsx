@@ -5,9 +5,7 @@ import { veronicaStore } from "@/lib/veronica-store";
 import { VeronicaSidebar } from "@/components/veronica/os/VeronicaSidebar";
 import { VeronicaCommandBar } from "@/components/veronica/os/VeronicaCommandBar";
 import { VeronicaBrain } from "@/components/veronica/webgl/VeronicaBrain";
-import { VeronicaSpaceHero } from "@/components/veronica/landing/VeronicaSpaceHero";
 import { VeronicaBecomeSelf } from "@/components/veronica/landing/VeronicaBecomeSelf";
-import { Scene } from "@/components/Scene";
 
 // Botanical & Machine Learning Views
 import { HomeView } from "@/components/veronica/views/HomeView";
@@ -29,8 +27,7 @@ import { SettingsView } from "@/components/veronica/views/SettingsView";
 import { SelfView } from "@/components/veronica/views/SelfView";
 import { MCPHubView } from "@/components/veronica/views/MCPHubView";
 import { LangGraphStudioView } from "@/components/veronica/views/LangGraphStudioView";
-import { PortfolioHomeView } from "@/components/veronica/views/PortfolioHomeView";
-import { X, Brain, Leaf, Compass, Menu, Search, Sparkles } from "lucide-react";
+import { X, Brain, Menu, Search } from "lucide-react";
 
 export default function VeronicaApp() {
   const [user, setUser] = useState(veronicaStore.getUser());
@@ -52,8 +49,6 @@ export default function VeronicaApp() {
   const [reflections, setReflections] = useState(veronicaStore.getReflections());
   const [isMounted, setIsMounted] = useState(false);
 
-  // UI state: Default to false so the Motionsites Space Hero is the first thing visible on load!
-  const [isInOSMode, setIsInOSMode] = useState(false);
   const [showBrain, setShowBrain] = useState(false);
   const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
   const [isBecomeSelfOpen, setIsBecomeSelfOpen] = useState(false);
@@ -100,14 +95,12 @@ export default function VeronicaApp() {
 
   const handleCompleteBecomeSelf = () => {
     setIsBecomeSelfOpen(false);
-    setIsInOSMode(true);
   };
 
   if (!isMounted) return null;
 
   const getViewTitle = () => {
     switch (activeView) {
-      case "PORTFOLIO": return "Vigneshwaran S P (Portfolio & Systems)";
       case "AGENTS": return "Veronica Agents (Autonomous Workers)";
       case "HOME": return "Executive Dashboard";
       case "MCP_HUB": return "Model Context Protocol (MCP) Hub";
@@ -152,214 +145,195 @@ export default function VeronicaApp() {
         />
       )}
 
-      {isInOSMode ? (
-        <div className="flex min-h-screen relative">
-          {/* Sleek Vertical Sidebar Navigation */}
-          <VeronicaSidebar
-            user={user}
-            personas={personas}
-            activePersona={activePersona}
-            currentMode={currentMode}
-            avatarState={avatarState}
-            showBrain={showBrain}
-            onToggleBrain={() => setShowBrain(!showBrain)}
-            onOpenCommandBar={() => setIsCommandBarOpen(true)}
-            onSelectView={handleSelectView}
-            onOpenSpaceHero={() => setIsInOSMode(false)}
-            activeView={activeView}
-            isMobileOpen={isMobileSidebarOpen}
-            onCloseMobile={() => setIsMobileSidebarOpen(false)}
-          />
+      <div className="flex min-h-screen relative">
+        {/* Sleek Vertical Sidebar Navigation */}
+        <VeronicaSidebar
+          user={user}
+          personas={personas}
+          activePersona={activePersona}
+          currentMode={currentMode}
+          avatarState={avatarState}
+          showBrain={showBrain}
+          onToggleBrain={() => setShowBrain(!showBrain)}
+          onOpenCommandBar={() => setIsCommandBarOpen(true)}
+          onSelectView={handleSelectView}
+          onOpenSpaceHero={() => handleSelectView("HOME")}
+          activeView={activeView}
+          isMobileOpen={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        />
 
-          {/* Main Content Area */}
-          <div className="flex-1 lg:pl-72 flex flex-col min-h-screen min-w-0 transition-all">
-            {/* Top Micro-Header Bar */}
-            <header className="h-14 border-b border-[#E6E2DA] bg-[#F9F8F4]/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsMobileSidebarOpen(true)}
-                  className="lg:hidden p-2 bg-[#FFFFFF] border border-[#E6E2DA] rounded-xl text-[#2D3A31]"
-                >
-                  <Menu className="w-4 h-4" />
-                </button>
+        {/* Main Content Area */}
+        <div className="flex-1 lg:pl-72 flex flex-col min-h-screen min-w-0 transition-all">
+          {/* Top Micro-Header Bar */}
+          <header className="h-14 border-b border-[#E6E2DA] bg-[#F9F8F4]/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="lg:hidden p-2 bg-[#FFFFFF] border border-[#E6E2DA] rounded-xl text-[#2D3A31]"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
 
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#8C9A84]">
-                  <span>Veronica</span>
-                  <span>/</span>
-                  <span className="text-[#2D3A31] font-bold">{getViewTitle()}</span>
-                </div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#8C9A84]">
+                <span>Veronica</span>
+                <span>/</span>
+                <span className="text-[#2D3A31] font-bold">{getViewTitle()}</span>
               </div>
-
-              <div className="flex items-center gap-2.5">
-                <button
-                  onClick={() => setIsCommandBarOpen(true)}
-                  className="px-3 py-1.5 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-medium text-[#2D3A31] flex items-center gap-2 shadow-sm transition-all"
-                >
-                  <Search className="w-3.5 h-3.5 text-[#8C9A84]" />
-                  <span className="hidden sm:inline">Search (Cmd+K)</span>
-                </button>
-
-                <button
-                  onClick={() => setShowBrain(!showBrain)}
-                  className="p-2 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-[#2D3A31] shadow-sm transition-all"
-                  title="Toggle 3D Neural Brain"
-                >
-                  <Brain className="w-3.5 h-3.5 text-[#8C9A84]" />
-                </button>
-              </div>
-            </header>
-
-            {/* View Viewport */}
-            <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6">
-              {activeView === "PORTFOLIO" && (
-                <PortfolioHomeView
-                  onLaunchOS={(view) => {
-                    if (view) setActiveView(view);
-                  }}
-                />
-              )}
-              {activeView === "MCP_HUB" && (
-                <MCPHubView onNavigateView={handleSelectView} />
-              )}
-              {activeView === "LANGGRAPH_STUDIO" && (
-                <LangGraphStudioView onNavigateView={handleSelectView} />
-              )}
-              {activeView === "HOME" && (
-                <HomeView
-                  user={user}
-                  activePersona={activePersona}
-                  simulations={simulations}
-                  memories={memories}
-                  auditEvents={auditEvents}
-                  onNavigateView={handleSelectView}
-                />
-              )}
-              {activeView === "AI_GUDOWN" && (
-                <AIGudownView
-                  user={user}
-                  activePersona={activePersona}
-                  memories={memories}
-                  onNavigateView={handleSelectView}
-                />
-              )}
-              {activeView === "DATA_CENTRE" && (
-                <DataCentreView
-                  user={user}
-                  activePersona={activePersona}
-                  memories={memories}
-                  onNavigateView={handleSelectView}
-                />
-              )}
-              {activeView === "BOARD_ROOM" && (
-                <AIBoardRoomView
-                  user={user}
-                  activePersona={activePersona}
-                  memories={memories}
-                  onNavigateView={handleSelectView}
-                />
-              )}
-              {activeView === "CHAT" && (
-                <ChatView
-                  user={user}
-                  activePersona={activePersona}
-                  memories={memories}
-                  preferences={preferences}
-                  currentMode={currentMode}
-                  onNavigateView={handleSelectView}
-                />
-              )}
-              {activeView === "SIMULATION" && (
-                <SimulationView
-                  user={user}
-                  activePersona={activePersona}
-                  memories={memories}
-                  preferences={preferences}
-                  patterns={patterns}
-                  simulations={simulations}
-                />
-              )}
-              {activeView === "MEMORY" && <MemoryView memories={memories} />}
-              {activeView === "PERSONA" && (
-                <PersonaView
-                  personas={personas}
-                  activePersonaId={user.activePersonaId}
-                />
-              )}
-              {activeView === "BEHAVIOR" && (
-                <BehaviorView
-                  preferences={preferences}
-                  patterns={patterns}
-                  knowledgeGraph={knowledgeGraph}
-                />
-              )}
-              {activeView === "AGENTS" && (
-                <AgentsView onNavigateView={handleSelectView} />
-              )}
-              {activeView === "COUNCIL" && (
-                <CouncilView
-                  councilMembers={councilMembers}
-                  councilDebates={councilDebates}
-                />
-              )}
-              {activeView === "STUDIO" && (
-                <StudioView
-                  user={user}
-                  activePersona={activePersona}
-                  memories={memories}
-                />
-              )}
-              {activeView === "WORLD" && <WorldView windows={windows} />}
-              {activeView === "ANALYTICS" && (
-                <AnalyticsView
-                  user={user}
-                  simulations={simulations}
-                  reflections={reflections}
-                />
-              )}
-              {activeView === "TRUST" && (
-                <TrustView
-                  user={user}
-                  auditEvents={auditEvents}
-                  memories={memories}
-                />
-              )}
-              {activeView === "SELF" && <SelfView user={user} />}
-              {activeView === "SETTINGS" && <SettingsView />}
             </div>
 
-            {/* Floating 3D WebGL Digital Brain HUD */}
-            {showBrain && (
-              <div className="fixed bottom-6 right-6 w-80 h-96 bg-[#FFFFFF]/95 border border-[#E6E2DA] rounded-3xl shadow-2xl z-50 flex flex-col backdrop-blur-md overflow-hidden animate-in fade-in">
-                <div className="flex items-center justify-between px-4 py-3 bg-[#F9F8F4] border-b border-[#E6E2DA]">
-                  <div className="flex items-center gap-2 text-xs text-[#2D3A31] font-semibold">
-                    <Brain className="w-4 h-4 text-[#8C9A84]" />
-                    <span>3D Neural Brain</span>
-                  </div>
-                  <button
-                    onClick={() => setShowBrain(false)}
-                    className="text-[#2D3A31]/60 hover:text-[#2D3A31] p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="flex-1 w-full h-full relative">
-                  <VeronicaBrain
-                    avatarState={avatarState}
-                  />
-                </div>
-              </div>
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setIsCommandBarOpen(true)}
+                className="px-3.5 py-1.5 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-medium text-[#2D3A31] flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+              >
+                <Search className="w-3.5 h-3.5 text-[#8C9A84]" />
+                <span className="hidden sm:inline">Search (Cmd+K)</span>
+              </button>
+
+              <button
+                onClick={() => setShowBrain(!showBrain)}
+                className="p-2 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-[#2D3A31] shadow-xs transition-all cursor-pointer"
+                title="Toggle 3D Neural Brain"
+              >
+                <Brain className="w-3.5 h-3.5 text-[#8C9A84]" />
+              </button>
+            </div>
+          </header>
+
+          {/* View Viewport */}
+          <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6">
+            {activeView === "AGENTS" && (
+              <AgentsView onNavigateView={handleSelectView} />
             )}
+            {activeView === "MCP_HUB" && (
+              <MCPHubView onNavigateView={handleSelectView} />
+            )}
+            {activeView === "LANGGRAPH_STUDIO" && (
+              <LangGraphStudioView onNavigateView={handleSelectView} />
+            )}
+            {activeView === "HOME" && (
+              <HomeView
+                user={user}
+                activePersona={activePersona}
+                simulations={simulations}
+                memories={memories}
+                auditEvents={auditEvents}
+                onNavigateView={handleSelectView}
+              />
+            )}
+            {activeView === "AI_GUDOWN" && (
+              <AIGudownView
+                user={user}
+                activePersona={activePersona}
+                memories={memories}
+                onNavigateView={handleSelectView}
+              />
+            )}
+            {activeView === "DATA_CENTRE" && (
+              <DataCentreView
+                user={user}
+                activePersona={activePersona}
+                memories={memories}
+                onNavigateView={handleSelectView}
+              />
+            )}
+            {activeView === "BOARD_ROOM" && (
+              <AIBoardRoomView
+                user={user}
+                activePersona={activePersona}
+                memories={memories}
+                onNavigateView={handleSelectView}
+              />
+            )}
+            {activeView === "CHAT" && (
+              <ChatView
+                user={user}
+                activePersona={activePersona}
+                memories={memories}
+                preferences={preferences}
+                currentMode={currentMode}
+                onNavigateView={handleSelectView}
+              />
+            )}
+            {activeView === "SIMULATION" && (
+              <SimulationView
+                user={user}
+                activePersona={activePersona}
+                memories={memories}
+                preferences={preferences}
+                patterns={patterns}
+                simulations={simulations}
+              />
+            )}
+            {activeView === "MEMORY" && <MemoryView memories={memories} />}
+            {activeView === "PERSONA" && (
+              <PersonaView
+                personas={personas}
+                activePersonaId={user.activePersonaId}
+              />
+            )}
+            {activeView === "BEHAVIOR" && (
+              <BehaviorView
+                preferences={preferences}
+                patterns={patterns}
+                knowledgeGraph={knowledgeGraph}
+              />
+            )}
+            {activeView === "COUNCIL" && (
+              <CouncilView
+                councilMembers={councilMembers}
+                councilDebates={councilDebates}
+              />
+            )}
+            {activeView === "STUDIO" && (
+              <StudioView
+                user={user}
+                activePersona={activePersona}
+                memories={memories}
+              />
+            )}
+            {activeView === "WORLD" && <WorldView windows={windows} />}
+            {activeView === "ANALYTICS" && (
+              <AnalyticsView
+                user={user}
+                simulations={simulations}
+                reflections={reflections}
+              />
+            )}
+            {activeView === "TRUST" && (
+              <TrustView
+                user={user}
+                auditEvents={auditEvents}
+                memories={memories}
+              />
+            )}
+            {activeView === "SELF" && <SelfView user={user} />}
+            {activeView === "SETTINGS" && <SettingsView />}
           </div>
+
+          {/* Floating 3D WebGL Digital Brain HUD */}
+          {showBrain && (
+            <div className="fixed bottom-6 right-6 w-80 h-96 bg-[#FFFFFF]/95 border border-[#E6E2DA] rounded-3xl shadow-2xl z-50 flex flex-col backdrop-blur-md overflow-hidden animate-in fade-in">
+              <div className="flex items-center justify-between px-4 py-3 bg-[#F9F8F4] border-b border-[#E6E2DA]">
+                <div className="flex items-center gap-2 text-xs text-[#2D3A31] font-semibold">
+                  <Brain className="w-4 h-4 text-[#8C9A84]" />
+                  <span>3D Neural Brain</span>
+                </div>
+                <button
+                  onClick={() => setShowBrain(false)}
+                  className="text-[#2D3A31]/60 hover:text-[#2D3A31] p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex-1 w-full h-full relative">
+                <VeronicaBrain avatarState={avatarState} />
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        /* Dedicated Portfolio Home Page of Vigneshwaran S P */
-        <PortfolioHomeView
-          onLaunchOS={(view) => {
-            setIsInOSMode(true);
-            if (view) setActiveView(view);
-          }}
-        />
-      )}
+      </div>
     </main>
   );
 }

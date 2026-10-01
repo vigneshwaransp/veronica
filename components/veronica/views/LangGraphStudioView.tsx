@@ -118,111 +118,106 @@ export function LangGraphStudioView({ onNavigateView }: LangGraphStudioViewProps
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-12">
-      {/* Top Banner */}
-      <div className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#8C9A84]/15 via-transparent to-transparent pointer-events-none rounded-full blur-3xl -mr-20 -mt-20" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-semibold text-[#2D3A31]">
-              <GitFork className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>LangChain & LangGraph State Machine Studio</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] text-emerald-700 font-mono">Cyclical DAGs</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2D3A31]">
-              Multi-Agent StateGraph Engine
-            </h1>
-            <p className="text-sm text-[#2D3A31]/70 max-w-2xl">
-              Construct, visualize, and execute graph-based autonomous multi-agent pipelines with conditional edges, adversarial self-correction loops, and MCP tool bindings.
-            </p>
+      {/* 1. Header & Global Action Bar */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between border-b border-[#E6E2DA] pb-6 gap-6">
+        <div className="space-y-1.5 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-semibold text-[#8C9A84]">
+            <GitFork className="w-3.5 h-3.5 text-[#8C9A84]" />
+            <span>LangGraph • Multi-Agent Cyclic DAG Studio</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl">
-              <Layers className="w-4 h-4 text-[#8C9A84]" />
-              <div className="text-left">
-                <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase">Active Topologies</div>
-                <div className="text-xs font-bold text-[#2D3A31]">{topologies.length} Graph Blueprints</div>
-              </div>
-            </div>
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#2D3A31]">
+            LangGraph <span className="font-cursive text-4xl sm:text-5xl text-[#8C9A84]">Multi-Agent</span> Studio
+          </h2>
+          <p className="text-xs sm:text-sm text-[#2D3A31]/75 leading-relaxed">
+            Construct, visualize, and execute graph-based autonomous multi-agent pipelines with conditional edges, adversarial self-correction loops, and MCP tool bindings.
+          </p>
+        </div>
 
-            <div className="flex items-center gap-2 px-4 py-2 bg-[#F9F8F4] border border-[#E6E2DA] rounded-2xl">
-              <RotateCw className="w-4 h-4 text-[#8C9A84]" />
-              <div className="text-left">
-                <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase">Max Self-Correction</div>
-                <div className="text-xs font-bold text-[#2D3A31]">{maxLoops} Iterations</div>
-              </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl shadow-xs">
+            <Layers className="w-4 h-4 text-[#8C9A84]" />
+            <div className="text-left">
+              <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase font-mono">Active Topologies</div>
+              <div className="text-xs font-bold text-[#2D3A31]">{topologies.length} Graph Blueprints</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl shadow-xs">
+            <RotateCw className="w-4 h-4 text-[#8C9A84]" />
+            <div className="text-left">
+              <div className="text-[10px] font-medium text-[#2D3A31]/60 uppercase font-mono">Max Self-Correction</div>
+              <div className="text-xs font-bold text-[#2D3A31]">{maxLoops} Iterations</div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Sub Header Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-6 border-t border-[#E6E2DA]">
-          <div className="flex items-center gap-1.5 bg-[#F9F8F4] p-1 rounded-2xl border border-[#E6E2DA]">
-            <button
-              onClick={() => setStudioTab("visual")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                studioTab === "visual"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <GitFork className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>Interactive Graph</span>
-            </button>
-            <button
-              onClick={() => setStudioTab("traces")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                studioTab === "traces"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <Activity className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>Step Traces ({executionResult?.stepsCount || 0})</span>
-            </button>
-            <button
-              onClick={() => setStudioTab("state")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                studioTab === "state"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <Code className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>AgentState Inspector</span>
-            </button>
-            <button
-              onClick={() => setStudioTab("topologies")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                studioTab === "topologies"
-                  ? "bg-[#FFFFFF] text-[#2D3A31] shadow-sm"
-                  : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5 text-[#8C9A84]" />
-              <span>Topology Library</span>
-            </button>
-          </div>
+      {/* Sub Header Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-4 py-2">
+        <div className="flex items-center gap-1.5 bg-[#F9F8F4] p-1 rounded-2xl border border-[#E6E2DA]">
+          <button
+            onClick={() => setStudioTab("visual")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              studioTab === "visual"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <GitFork className="w-3.5 h-3.5" />
+            <span>Interactive Graph</span>
+          </button>
+          <button
+            onClick={() => setStudioTab("traces")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              studioTab === "traces"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Step Traces ({executionResult?.stepsCount || 0})</span>
+          </button>
+          <button
+            onClick={() => setStudioTab("state")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              studioTab === "state"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <Code className="w-3.5 h-3.5" />
+            <span>AgentState Inspector</span>
+          </button>
+          <button
+            onClick={() => setStudioTab("topologies")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              studioTab === "topologies"
+                ? "bg-[#2D3A31] text-[#FFFFFF] shadow-sm"
+                : "text-[#2D3A31]/60 hover:text-[#2D3A31]"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Topology Library</span>
+          </button>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[#2D3A31]/60 font-semibold">Graph Blueprint:</span>
-            <select
-              value={selectedTopologyId}
-              onChange={(e) => {
-                const topo = topologies.find((t) => t.id === e.target.value);
-                if (topo) handleSelectTopology(topo);
-              }}
-              className="px-3 py-1.5 bg-[#F9F8F4] border border-[#E6E2DA] rounded-xl text-xs font-bold text-[#2D3A31] focus:ring-1 focus:ring-[#8C9A84] focus:outline-none"
-            >
-              {topologies.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-[#2D3A31]/60 font-semibold font-mono">Graph Blueprint:</span>
+          <select
+            value={selectedTopologyId}
+            onChange={(e) => {
+              const topo = topologies.find((t) => t.id === e.target.value);
+              if (topo) handleSelectTopology(topo);
+            }}
+            className="px-3.5 py-1.5 bg-[#FFFFFF] border border-[#E6E2DA] rounded-full text-xs font-bold text-[#2D3A31] focus:ring-1 focus:ring-[#8C9A84] focus:outline-none shadow-xs cursor-pointer"
+          >
+            {topologies.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

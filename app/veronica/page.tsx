@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { veronicaStore } from "@/lib/veronica-store";
 import { VeronicaSidebar } from "@/components/veronica/os/VeronicaSidebar";
 import { VeronicaCommandBar } from "@/components/veronica/os/VeronicaCommandBar";
@@ -28,8 +27,7 @@ import { SettingsView } from "@/components/veronica/views/SettingsView";
 import { SelfView } from "@/components/veronica/views/SelfView";
 import { MCPHubView } from "@/components/veronica/views/MCPHubView";
 import { LangGraphStudioView } from "@/components/veronica/views/LangGraphStudioView";
-import { PortfolioHomeView } from "@/components/veronica/views/PortfolioHomeView";
-import { X, Brain, Menu, Search, User, Sparkles } from "lucide-react";
+import { X, Brain, Menu, Search } from "lucide-react";
 
 export default function VeronicaDedicatedOSPage() {
   const [user, setUser] = useState(veronicaStore.getUser());
@@ -103,7 +101,6 @@ export default function VeronicaDedicatedOSPage() {
 
   const getViewTitle = () => {
     switch (activeView) {
-      case "PORTFOLIO": return "Vigneshwaran S P (Portfolio & Systems)";
       case "AGENTS": return "Veronica Agents (Autonomous Workers)";
       case "HOME": return "Executive Dashboard";
       case "MCP_HUB": return "Model Context Protocol (MCP) Hub";
@@ -160,7 +157,7 @@ export default function VeronicaDedicatedOSPage() {
           onToggleBrain={() => setShowBrain(!showBrain)}
           onOpenCommandBar={() => setIsCommandBarOpen(true)}
           onSelectView={handleSelectView}
-          onOpenSpaceHero={() => setActiveView("PORTFOLIO")}
+          onOpenSpaceHero={() => handleSelectView("HOME")}
           activeView={activeView}
           isMobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
@@ -186,17 +183,9 @@ export default function VeronicaDedicatedOSPage() {
             </div>
 
             <div className="flex items-center gap-2.5">
-              <Link
-                href="/"
-                className="px-3 py-1.5 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-medium text-[#2D3A31] flex items-center gap-1.5 shadow-xs transition-all"
-              >
-                <User className="w-3.5 h-3.5 text-[#8C9A84]" />
-                <span className="hidden sm:inline">Creator Portfolio</span>
-              </Link>
-
               <button
                 onClick={() => setIsCommandBarOpen(true)}
-                className="px-3 py-1.5 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-medium text-[#2D3A31] flex items-center gap-2 shadow-xs transition-all"
+                className="px-3.5 py-1.5 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-xs font-medium text-[#2D3A31] flex items-center gap-2 shadow-xs transition-all cursor-pointer"
               >
                 <Search className="w-3.5 h-3.5 text-[#8C9A84]" />
                 <span className="hidden sm:inline">Search (Cmd+K)</span>
@@ -204,7 +193,7 @@ export default function VeronicaDedicatedOSPage() {
 
               <button
                 onClick={() => setShowBrain(!showBrain)}
-                className="p-2 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-[#2D3A31] shadow-xs transition-all"
+                className="p-2 bg-[#FFFFFF] hover:bg-[#F2F0EB] border border-[#E6E2DA] rounded-full text-[#2D3A31] shadow-xs transition-all cursor-pointer"
                 title="Toggle 3D Neural Brain"
               >
                 <Brain className="w-3.5 h-3.5 text-[#8C9A84]" />
@@ -214,12 +203,8 @@ export default function VeronicaDedicatedOSPage() {
 
           {/* View Viewport */}
           <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-6">
-            {activeView === "PORTFOLIO" && (
-              <PortfolioHomeView
-                onLaunchOS={(view) => {
-                  if (view) setActiveView(view);
-                }}
-              />
+            {activeView === "AGENTS" && (
+              <AgentsView onNavigateView={handleSelectView} />
             )}
             {activeView === "MCP_HUB" && (
               <MCPHubView onNavigateView={handleSelectView} />
@@ -294,9 +279,6 @@ export default function VeronicaDedicatedOSPage() {
                 patterns={patterns}
                 knowledgeGraph={knowledgeGraph}
               />
-            )}
-            {activeView === "AGENTS" && (
-              <AgentsView onNavigateView={handleSelectView} />
             )}
             {activeView === "COUNCIL" && (
               <CouncilView

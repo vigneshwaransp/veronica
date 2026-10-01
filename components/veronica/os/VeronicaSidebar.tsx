@@ -69,7 +69,6 @@ export const VeronicaSidebar: React.FC<VeronicaSidebarProps> = ({
     {
       group: "Core Intelligence",
       links: [
-        { id: "PORTFOLIO", label: "Vigneshwaran Portfolio", icon: User, badge: "Creator" },
         { id: "AGENTS", label: "Veronica Agents", icon: Bot, badge: "Autonomous" },
         { id: "HOME", label: "Executive Dashboard", icon: Compass },
         { id: "MCP_HUB", label: "MCP Hub (Google / OpenAI)", icon: Server, badge: "MCP v1" },

@@ -78,17 +78,6 @@ export const VeronicaCommandBar: React.FC<VeronicaCommandBarProps> = ({
 
   const COMMANDS: CommandOption[] = [
     {
-      id: "cmd_portfolio",
-      category: "PORTFOLIO",
-      label: "Open Vigneshwaran S P Portfolio",
-      sublabel: "Personal identity, AI innovations, technical matrix, and contact",
-      icon: User,
-      action: () => {
-        onNavigateView("PORTFOLIO");
-        onClose();
-      },
-    },
-    {
       id: "cmd_agents",
       category: "AUTONOMOUS AGENTS",
       label: "Open Veronica Agents (Research, Coding, Analysis, General)",
