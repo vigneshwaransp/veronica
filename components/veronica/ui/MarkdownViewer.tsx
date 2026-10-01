@@ -63,37 +63,39 @@ export function MarkdownViewer({ content, className = "" }: MarkdownViewerProps)
           tr: ({ children }) => <tr className="hover:bg-[#F9F8F4] transition-colors">{children}</tr>,
           th: ({ children }) => <th className="px-3 py-2 text-left font-bold font-mono text-[11px]">{children}</th>,
           td: ({ children }) => <td className="px-3 py-2 text-[11px] text-[#2D3A31]/85">{children}</td>,
-          code: ({ inline, className, children, ...props }: any) => {
-            const codeString = String(children).replace(/\n$/, "");
-            if (inline) {
-              return (
-                <code
-                  className="px-1.5 py-0.5 rounded-md bg-[#F2F0EB] text-[#2D3A31] font-mono text-[11px] border border-[#E6E2DA]"
-                  {...props}
-                >
-                  {children}
-                </code>
-              );
-            }
-            const currentIndex = ++codeBlockCounter;
-            const isCopied = copiedIndex === currentIndex;
-
+          pre: ({ children }: any) => {
             return (
               <div className="relative group my-3 rounded-2xl overflow-hidden border border-[#2D3A31] bg-[#1B241E]">
                 <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#0F1411] border-b border-[#2D3A31] text-[10px] font-mono text-[#8C9A84]">
                   <span>CODE SNIPPET</span>
-                  <button
-                    onClick={() => handleCopyCode(codeString, currentIndex)}
-                    className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {isCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                    <span>{isCopied ? "Copied" : "Copy"}</span>
-                  </button>
                 </div>
-                <pre className="p-3.5 text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap leading-relaxed">
-                  <code>{children}</code>
-                </pre>
+                <div className="p-3.5 text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap leading-relaxed">
+                  {children}
+                </div>
               </div>
+            );
+          },
+          code: ({ className, children, ...props }: any) => {
+            const isMultiLine = String(children).includes("\n");
+            const isLanguageBlock = /language-(\w+)/.test(className || "");
+
+            // If it's a block inside <pre>, render code tag without <div> wrappers
+            if (isMultiLine || isLanguageBlock) {
+              return (
+                <code className="font-mono text-xs text-emerald-400" {...props}>
+                  {children}
+                </code>
+              );
+            }
+
+            // Inline code inside <p>, <li>, etc.
+            return (
+              <code
+                className="px-1.5 py-0.5 rounded-md bg-[#F2F0EB] text-[#2D3A31] font-mono text-[11px] border border-[#E6E2DA]"
+                {...props}
+              >
+                {children}
+              </code>
             );
           },
           hr: () => <hr className="my-3 border-[#E6E2DA]" />,
