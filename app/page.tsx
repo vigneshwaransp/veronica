@@ -108,6 +108,7 @@ export default function VeronicaApp() {
   const getViewTitle = () => {
     switch (activeView) {
       case "PORTFOLIO": return "Vigneshwaran S P (Portfolio & Systems)";
+      case "AGENTS": return "Veronica Agents (Autonomous Workers)";
       case "HOME": return "Executive Dashboard";
       case "MCP_HUB": return "Model Context Protocol (MCP) Hub";
       case "LANGGRAPH_STUDIO": return "LangGraph StateGraph Studio";
@@ -291,7 +292,10 @@ export default function VeronicaApp() {
                   knowledgeGraph={knowledgeGraph}
                 />
               )}
-              {(activeView === "COUNCIL" || activeView === "AGENTS") && (
+              {activeView === "AGENTS" && (
+                <AgentsView onNavigateView={handleSelectView} />
+              )}
+              {activeView === "COUNCIL" && (
                 <CouncilView
                   councilMembers={councilMembers}
                   councilDebates={councilDebates}

@@ -25,7 +25,8 @@ import {
   ExternalLink,
   User,
   Server,
-  GitFork
+  GitFork,
+  Bot
 } from "lucide-react";
 
 interface VeronicaCommandBarProps {
@@ -84,6 +85,17 @@ export const VeronicaCommandBar: React.FC<VeronicaCommandBarProps> = ({
       icon: User,
       action: () => {
         onNavigateView("PORTFOLIO");
+        onClose();
+      },
+    },
+    {
+      id: "cmd_agents",
+      category: "AUTONOMOUS AGENTS",
+      label: "Open Veronica Agents (Research, Coding, Analysis, General)",
+      sublabel: "Autonomous AI workers with planning, tool execution, and self-verification",
+      icon: Bot,
+      action: () => {
+        onNavigateView("AGENTS");
         onClose();
       },
     },

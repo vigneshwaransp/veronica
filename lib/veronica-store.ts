@@ -25,6 +25,7 @@ import {
   CoreLoopStage,
   CoreLoopStepDetail
 } from "@/types/veronica";
+import { AgentTaskResult } from "@/lib/agents/agent-interface";
 
 // Default Initial Seed Data
 export const INITIAL_USER: UserProfile = {
@@ -800,6 +801,7 @@ class VeronicaStateStore {
       appliedWeightChange: "Weight updated to 96%"
     }
   ];
+  private agentTaskHistory: AgentTaskResult[] = [];
 
   private listeners: Set<Listener> = new Set();
 
@@ -1543,6 +1545,20 @@ class VeronicaStateStore {
     this.notify();
 
     return steps;
+  }
+
+  public getAgentTaskHistory(): AgentTaskResult[] {
+    return this.agentTaskHistory;
+  }
+
+  public addAgentTaskResult(result: AgentTaskResult): void {
+    this.agentTaskHistory = [result, ...this.agentTaskHistory.filter((r) => r.taskId !== result.taskId)];
+    this.notify();
+  }
+
+  public clearAgentTaskHistory(): void {
+    this.agentTaskHistory = [];
+    this.notify();
   }
 }
 
